@@ -10,12 +10,12 @@ spring:
     name: crm
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://47.114.129.194:3306/crm?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
-    username: root
-    password: crm1994
-#    url: jdbc:mysql://127.0.0.1:3306/crm?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
-#    username: root
-#    password: root
+    url: jdbc:mysql://xx:3306/crm?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+    username: xx
+    password: xx
+#    url: jdbc:mysql://xx:3306/crm?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+#    username: xx
+#    password: xx
   servlet:
     multipart:
       max-file-size: 1MB
