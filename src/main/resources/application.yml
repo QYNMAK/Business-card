@@ -1,0 +1,36 @@
+server:
+#  port: 80
+  port: 443
+  ssl:
+#    https 证书
+    key-store: xx
+    key-store-password: xx
+spring:
+  application:
+    name: crm
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://47.114.129.194:3306/crm?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+    username: root
+    password: crm1994
+#    url: jdbc:mysql://127.0.0.1:3306/crm?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+#    username: root
+#    password: root
+  servlet:
+    multipart:
+      max-file-size: 1MB
+      max-request-size: 100MB
+crm:
+  aliyun:
+    access-key-id: xx
+    endpoint: xx
+    access-key-secret: xx
+    img-preview: xx
+#    微信小程序配置
+  internal:
+    app-id: xx
+    app-secret: xx
+    app-login-url: xx
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
