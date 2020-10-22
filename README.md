@@ -13,9 +13,5 @@
 
 #### 相关截图
 
-​​![输入图片说明](https://img-blog.csdnimg.cn/img_convert/864511d4153562890fa15af9db11fd94.png "在这里输入图片标题")
-![输入图片说明](https://img-blog.csdnimg.cn/img_convert/aea6da5d54cf0d4669016acda80df017.png "在这里输入图片标题")
-![输入图片说明](https://img-blog.csdnimg.cn/img_convert/3c8ecc274e2f6bd3848335c320196854.png "在这里输入图片标题")
-![输入图片说明](https://img-blog.csdnimg.cn/img_convert/d2e8f9026013e5965c34da4dd9a8d0d8.png "在这里输入图片标题")
 
 [详细细节见我的博客](https://blog.csdn.net/qq_21688139/article/details/108949828)
