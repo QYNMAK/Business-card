@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#2E7D32">
+<title>商家名片</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;background:#000;-webkit-user-select:none;user-select:none;touch-action:manipulation}
+body{display:flex;justify-content:center;align-items:stretch}
+.app{position:relative;width:100%;max-width:480px;height:100dvh;background:#f5f6f8;overflow:hidden;display:flex;flex-direction:column}
+
+/* 状态栏 */
+.statusbar{height:44px;padding:14px 16px 0;display:flex;justify-content:space-between;align-items:flex-start;background:linear-gradient(135deg,#4CAF50,#2E7D32);color:#fff;font-size:13px;font-weight:600;flex-shrink:0}
+.statusbar .time{letter-spacing:.5px}
+.statusbar .sig{font-size:11px;letter-spacing:1px}
+
+/* 标题栏 */
+.navbar{height:44px;background:#2E7D32;color:#fff;display:flex;align-items:center;justify-content:center;position:relative;font-size:16px;font-weight:600;flex-shrink:0}
+.navbar .back{position:absolute;left:12px;top:0;height:44px;display:flex;align-items:center;font-size:22px;padding:0 8px;cursor:pointer}
+.navbar .nav-right{position:absolute;right:12px;top:0;height:44px;display:flex;align-items:center;font-size:11px;background:rgba(255,255,255,.18);border-radius:10px;padding:4px 10px}
+
+/* 内容区 */
+.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:64px}
+.page{display:none}
+.page.active{display:block}
+
+/* === 名片页 === */
+.hero{background:linear-gradient(135deg,#4CAF50,#2E7D32);padding:28px 24px 40px;text-align:center;color:#fff}
+.avatar{width:92px;height:92px;border-radius:50%;background:rgba(255,255,255,.25);border:4px solid rgba(255,255,255,.85);margin:0 auto 14px;overflow:hidden;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(0,0,0,.15)}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.hero h1{font-size:24px;font-weight:700;margin-bottom:6px}
+.hero .badge{display:inline-block;font-size:12px;background:rgba(255,255,255,.2);border-radius:20px;padding:4px 14px;margin-bottom:10px}
+.hero .desc{font-size:13px;line-height:1.7;opacity:.92;max-width:300px;margin:0 auto;white-space:pre-line}
+
+.section-title{padding:20px 20px 10px;font-size:13px;color:#999;letter-spacing:3px;text-align:center;font-weight:500}
+
+.action-grid{padding:0 16px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.action{background:#fff;border-radius:16px;padding:18px 12px;display:flex;flex-direction:column;align-items:center;gap:10px;box-shadow:0 3px 10px rgba(0,0,0,.05);transition:transform .15s;cursor:pointer}
+.action:active{transform:scale(.96)}
+.action .a-icon{width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:26px}
+.action .a-label{font-size:15px;font-weight:600;color:#333}
+.action .a-sub{font-size:11px;color:#aaa}
+.a-call .a-icon{background:#E3F2FD}
+.a-wx .a-icon{background:#E8F5E9}
+.a-add .a-icon{background:#FFF3E0}
+.a-msg .a-icon{background:#F3E5F5}
+.a-mail .a-icon{background:#E0F2F1}
+.a-share .a-icon{background:#FCE4EC}
+
+.detail-card{margin:18px 16px 0;background:#fff;border-radius:16px;box-shadow:0 3px 10px rgba(0,0,0,.05);overflow:hidden}
+.detail-card .dc-title{padding:14px 18px 8px;font-size:12px;color:#bbb;letter-spacing:1px}
+.d-row{display:flex;align-items:center;gap:12px;padding:13px 18px;border-top:1px solid #f5f5f5;cursor:pointer}
+.d-row:active{background:#f9f9f9}
+.d-ic{width:34px;height:34px;border-radius:10px;background:#f0f5f0;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.d-txt{flex:1;min-width:0}
+.d-label{font-size:11px;color:#aaa}
+.d-value{font-size:15px;color:#333;font-weight:600;word-break:break-all}
+.d-copy{font-size:11px;color:#4CAF50;background:#E8F5E9;padding:3px 9px;border-radius:8px;flex-shrink:0}
+
+.footer-note{text-align:center;font-size:11px;color:#ccc;padding:20px 30px 30px;line-height:1.7}
+
+/* === 我的页 === */
+.my-head{background:linear-gradient(135deg,#4CAF50,#2E7D32);padding:30px 24px;color:#fff;text-align:center}
+.my-head .m-avatar{width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.25);border:3px solid rgba(255,255,255,.8);margin:0 auto 12px;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:34px}
+.my-head .m-avatar img{width:100%;height:100%;object-fit:cover}
+.my-head h2{font-size:20px;margin-bottom:4px}
+.my-head p{font-size:12px;opacity:.85}
+.my-menu{padding:16px}
+.my-item{background:#fff;border-radius:14px;padding:16px;margin-bottom:10px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,.04);cursor:pointer}
+.my-item:active{transform:scale(.98)}
+.my-item .mi-ic{font-size:22px}
+.my-item .mi-txt{flex:1}
+.my-item .mi-t{font-size:15px;font-weight:600;color:#333}
+.my-item .mi-s{font-size:11px;color:#aaa;margin-top:2px}
+.my-item .arrow{color:#ccc;font-size:18px}
+
+/* === 编辑页 === */
+.edit-page{background:#f5f6f8;min-height:100dvh}
+.edit-header{background:linear-gradient(135deg,#4CAF50,#2E7D32);padding:20px 16px;color:#fff;position:sticky;top:0;z-index:10}
+.edit-header .eh-row{display:flex;align-items:center;gap:10px}
+.edit-header .eh-back{font-size:24px;cursor:pointer;padding:4px}
+.edit-header h2{font-size:18px;font-weight:600;flex:1}
+.edit-header .eh-save{font-size:13px;background:rgba(255,255,255,.2);border-radius:8px;padding:6px 14px;cursor:pointer;font-weight:500}
+.edit-body{padding:16px}
+.edit-section{background:#fff;border-radius:14px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.edit-section h3{font-size:13px;color:#bbb;margin-bottom:12px;letter-spacing:1px}
+.f-row{margin-bottom:14px}
+.f-row:last-child{margin-bottom:0}
+.f-label{font-size:12px;color:#888;margin-bottom:5px;font-weight:500}
+.f-input{width:100%;border:1px solid #e8e8e8;border-radius:10px;padding:10px 12px;font-size:15px;color:#333;outline:none;transition:border .2s;background:#fafafa}
+.f-input:focus{border-color:#4CAF50;background:#fff}
+.f-input::placeholder{color:#ccc}
+.f-textarea{width:100%;border:1px solid #e8e8e8;border-radius:10px;padding:10px 12px;font-size:14px;color:#333;outline:none;min-height:70px;resize:vertical;background:#fafafa;line-height:1.6}
+.f-textarea:focus{border-color:#4CAF50;background:#fff}
+/* 头像上传 */
+.avatar-upload{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.avatar-preview{width:64px;height:64px;border-radius:50%;background:#f0f0f0;display:flex;align-items:center;justify-content:center;font-size:28px;overflow:hidden;flex-shrink:0;border:2px solid #e0e0e0}
+.avatar-preview img{width:100%;height:100%;object-fit:cover}
+.avatar-actions{flex:1}
+.avatar-btn{font-size:13px;color:#4CAF50;cursor:pointer;font-weight:500}
+.avatar-hint{font-size:11px;color:#bbb;margin-top:4px}
+/* 微信二维码 */
+.qr-section{margin-bottom:14px}
+.qr-preview{width:100%;height:160px;background:#f9f9f9;border:2px dashed #ddd;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-top:8px;overflow:hidden;cursor:pointer}
+.qr-preview img{width:100%;height:100%;object-fit:contain}
+.qr-preview .qr-placeholder{font-size:12px;color:#ccc;text-align:center;line-height:1.8}
+/* 提交按钮 */
+.save-btn{width:100%;background:linear-gradient(135deg,#4CAF50,#2E7D32);color:#fff;border:none;border-radius:14px;padding:16px;font-size:16px;font-weight:600;cursor:pointer;margin-top:8px;letter-spacing:1px}
+.save-btn:active{opacity:.9;transform:scale(.98)}
+.save-btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* 底部标签栏 */
+.tabbar{position:absolute;left:0;right:0;bottom:0;height:64px;background:rgba(255,255,255,.96);backdrop-filter:blur(10px);border-top:1px solid #eee;display:flex;padding-bottom:8px;z-index:5}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#999;font-size:11px;cursor:pointer}
+.tab .t-icon{font-size:20px}
+.tab.active{color:#2E7D32}
+.tab.active .t-icon{transform:scale(1.1)}
+
+/* Toast */
+.toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);background:rgba(0,0,0,.78);color:#fff;padding:14px 26px;border-radius:12px;font-size:14px;z-index:9999;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;max-width:80%;text-align:center;line-height:1.6;white-space:pre-line}
+.toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+
+/* 隐藏 input */
+.hidden-input{display:none}
+</style>
+</head>
+<body>
+
+<!-- ========== 主界面（名片 + 我的） ========== -->
+<div class="app" id="mainApp">
+  <div class="statusbar">
+    <span class="time" id="time">--:--</span>
+    <span class="sig">▮▮▮▮ 100%</span>
+  </div>
+  <div class="navbar">
+    <span class="back" id="navBack" style="display:none" onclick="goBack()">‹</span>
+    <span id="navTitle">商家名片</span>
+    <span class="nav-right">✓ 已保存</span>
+  </div>
+
+  <div class="content">
+    <!-- 名片页 -->
+    <div class="page active" id="page-card">
+      <div class="hero">
+        <div class="avatar" id="cardAvatar"><span>📷</span></div>
+        <h1 id="cardName">我的名片</h1>
+        <div class="badge" id="cardBadge">填写你的业务类型</div>
+        <div class="desc" id="cardDesc">完善资料，展示专业形象</div>
+      </div>
+
+      <div class="section-title">— 快 速 联 系 —</div>
+      <div class="action-grid">
+        <div class="action a-call" onclick="doCall()">
+          <div class="a-icon">📞</div><div class="a-label">打电话</div><div class="a-sub" id="subPhone">未设置</div>
+        </div>
+        <div class="action a-wx" onclick="copyField('wechat','微信号')">
+          <div class="a-icon">💬</div><div class="a-label">微信号</div><div class="a-sub" id="subWx">未设置</div>
+        </div>
+        <div class="action a-add" onclick="showAddWx()">
+          <div class="a-icon">➕</div><div class="a-label">加微信</div><div class="a-sub" id="subAdd">扫码添加</div>
+        </div>
+        <div class="action a-msg" onclick="doMessage()">
+          <div class="a-icon">✉️</div><div class="a-label">发消息</div><div class="a-sub" id="subMsg">平台私信</div>
+        </div>
+        <div class="action a-mail" onclick="doEmail()">
+          <div class="a-icon">📧</div><div class="a-label">发邮件</div><div class="a-sub" id="subMail">未设置</div>
+        </div>
+        <div class="action a-share" onclick="shareCard()">
+          <div class="a-icon">🔗</div><div class="a-label">分享名片</div><div class="a-sub">转发好友</div>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="dc-title">联系详情</div>
+        <div class="d-row" onclick="copyField('phone','电话')">
+          <div class="d-ic">📱</div>
+          <div class="d-txt"><div class="d-label">电话</div><div class="d-value" id="valPhone">未填写</div></div>
+          <div class="d-copy">复制</div>
+        </div>
+        <div class="d-row" onclick="copyField('wechat','微信号')">
+          <div class="d-ic">💬</div>
+          <div class="d-txt"><div class="d-label">微信号</div><div class="d-value" id="valWx">未填写</div></div>
+          <div class="d-copy">复制</div>
+        </div>
+        <div class="d-row" onclick="copyField('email','邮箱')">
+          <div class="d-ic">📧</div>
+          <div class="d-txt"><div class="d-label">邮箱</div><div class="d-value" id="valMail">未填写</div></div>
+          <div class="d-copy">复制</div>
+        </div>
+        <div class="d-row" onclick="copyField('address','地址')">
+          <div class="d-ic">📍</div>
+          <div class="d-txt"><div class="d-label">坐标</div><div class="d-value" id="valAddr">未填写</div></div>
+          <div class="d-copy">复制</div>
+        </div>
+      </div>
+
+      <div class="footer-note">感谢信任 · 期待合作<br>平台规则不便直接回复，请通过上方方式联系 ❤️</div>
+    </div>
+
+    <!-- 我的页 -->
+    <div class="page" id="page-my">
+      <div class="my-head">
+        <div class="m-avatar" id="myAvatar"><span>📷</span></div>
+        <h2 id="myName">我的名片</h2>
+        <p>商家名片 · 可编辑</p>
+      </div>
+      <div class="my-menu">
+        <div class="my-item" onclick="openEditor()">
+          <div class="mi-ic">✏️</div>
+          <div class="mi-txt"><div class="mi-t">编辑名片信息</div><div class="mi-s">完善资料，展示专业形象</div></div>
+          <div class="arrow">›</div>
+        </div>
+        <div class="my-item" onclick="shareCard()">
+          <div class="mi-ic">📤</div>
+          <div class="mi-txt"><div class="mi-t">分享我的名片</div><div class="mi-s">生成链接 / 复制</div></div>
+          <div class="arrow">›</div>
+        </div>
+        <div class="my-item" onclick="resetAll()">
+          <div class="mi-ic">🗑️</div>
+          <div class="mi-txt"><div class="mi-t">清空所有信息</div><div class="mi-s">恢复默认状态</div></div>
+          <div class="arrow">›</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 编辑页（内嵌） -->
+    <div class="page" id="page-edit">
+      <div class="edit-page">
+        <div class="edit-header">
+          <div class="eh-row">
+            <span class="eh-back" onclick="closeEditor()">‹</span>
+            <h2>编辑名片信息</h2>
+            <span class="eh-save" onclick="saveData()">保存</span>
+          </div>
+        </div>
+        <div class="edit-body">
+          <!-- 头像 -->
+          <div class="edit-section">
+            <h3>头像</h3>
+            <div class="avatar-upload">
+              <div class="avatar-preview" id="editAvatarPrev"><span>📷</span></div>
+              <div class="avatar-actions">
+                <div class="avatar-btn" onclick="document.getElementById('avatarInput').click()">上传头像</div>
+                <div class="avatar-hint">建议 400×400 以上，职业形象照</div>
+              </div>
+            </div>
+            <input type="file" class="hidden-input" id="avatarInput" accept="image/*" onchange="handleAvatar(this)">
+          </div>
+
+          <!-- 基本信息 -->
+          <div class="edit-section">
+            <h3>基本信息</h3>
+            <div class="f-row">
+              <div class="f-label">姓名 / 昵称</div>
+              <input class="f-input" id="editName" placeholder="如：阿美摄影">
+            </div>
+            <div class="f-row">
+              <div class="f-label">业务类型</div>
+              <input class="f-input" id="editBizType" placeholder="如：摄影师 / 化妆师 / 设计师">
+            </div>
+            <div class="f-row">
+              <div class="f-label">业务名称</div>
+              <input class="f-input" id="editBizName" placeholder="如：商业人像 / 婚礼跟妆">
+            </div>
+            <div class="f-row">
+              <div class="f-label">一句话介绍</div>
+              <textarea class="f-textarea" id="editDesc" placeholder="如：8年行业经验，服务过200+品牌&#10;日常/领证/婚礼跟妆"></textarea>
+            </div>
+          </div>
+
+          <!-- 联系方式 -->
+          <div class="edit-section">
+            <h3>联系方式</h3>
+            <div class="f-row">
+              <div class="f-label">电话</div>
+              <input class="f-input" id="editPhone" type="tel" placeholder="请输入电话号码">
+            </div>
+            <div class="f-row">
+              <div class="f-label">微信号</div>
+              <input class="f-input" id="editWechat" placeholder="请输入微信号">
+            </div>
+            <div class="f-row">
+              <div class="f-label">邮箱</div>
+              <input class="f-input" id="editEmail" type="email" placeholder="请输入邮箱地址">
+            </div>
+            <div class="f-row">
+              <div class="f-label">消息链接（平台私信 URL）</div>
+              <input class="f-input" id="editMsgLink" placeholder="如：https://www.douyin.com/user/xxx">
+            </div>
+            <div class="f-row">
+              <div class="f-label">地址 / 坐标</div>
+              <input class="f-input" id="editAddress" placeholder="如：上海 · 静安区">
+            </div>
+          </div>
+
+          <!-- 微信二维码 -->
+          <div class="edit-section">
+            <h3>微信二维码（选填）</h3>
+            <div class="qr-section">
+              <div class="qr-preview" id="editQrPrev" onclick="document.getElementById('qrInput').click()">
+                <div class="qr-placeholder" id="qrPlaceholder">点击上传个人微信 / 企微二维码</div>
+                <img id="qrImg" style="display:none" alt="二维码">
+              </div>
+              <input type="file" class="hidden-input" id="qrInput" accept="image/*" onchange="handleQr(this)">
+            </div>
+          </div>
+
+          <!-- 底部提示 -->
+          <div style="text-align:center;padding:10px 0 24px">
+            <div style="font-size:11px;color:#ccc;margin-bottom:12px">信息保存在本机浏览器，刷新不丢失</div>
+            <button class="save-btn" onclick="saveData()">保存并更新名片</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 底部标签栏 -->
+  <div class="tabbar" id="tabbar">
+    <div class="tab active" id="tabCard" onclick="switchTab('card')">
+      <div class="t-icon">🏷️</div><div>名片</div>
+    </div>
+    <div class="tab" id="tabMy" onclick="switchTab('my')">
+      <div class="t-icon">👤</div><div>我的</div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ========== 数据层：localStorage 读写 ==========
+const KEY = 'merchantCardData';
+
+function loadData(){
+  try{
+    const raw = localStorage.getItem(KEY);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return {
+    name:'', bizType:'', bizName:'', desc:'',
+    phone:'', wechat:'', email:'', msgLink:'', address:'',
+    avatar:'', qr:''
+  };
+}
+
+function saveData(){
+  const d = {
+    name:   el('editName').value.trim(),
+    bizType: el('editBizType').value.trim(),
+    bizName: el('editBizName').value.trim(),
+    desc:   el('editDesc').value.trim(),
+    phone:  el('editPhone').value.trim(),
+    wechat: el('editWechat').value.trim(),
+    email:  el('editEmail').value.trim(),
+    msgLink:el('editMsgLink').value.trim(),
+    address:el('editAddress').value.trim(),
+    avatar: window._avatarData,
+    qr:     window._qrData
+  };
+  localStorage.setItem(KEY, JSON.stringify(d));
+  refreshCard();
+  toast('已保存 ✓ 名片已更新');
+}
+
+function el(id){ return document.getElementById(id); }
+
+// ========== 刷新名片页 ==========
+function refreshCard(){
+  const d = loadData();
+  // 头像
+  setAvatar(el('cardAvatar'), d.avatar);
+  setAvatar(el('myAvatar'), d.avatar);
+  setAvatar(el('editAvatarPrev'), d.avatar);
+  // 文字
+  el('cardName').textContent = d.name || '我的名片';
+  el('myName').textContent = d.name || '我的名片';
+  const badge = [d.bizType, d.bizName].filter(Boolean).join(' · ');
+  el('cardBadge').textContent = badge || '填写你的业务类型';
+  el('cardDesc').textContent = d.desc || '完善资料，展示专业形象';
+  // 详情
+  el('valPhone').textContent = d.phone || '未填写';
+  el('valWx').textContent    = d.wechat || '未填写';
+  el('valMail').textContent  = d.email || '未填写';
+  el('valAddr').textContent  = d.address || '未填写';
+  // 按钮副标题
+  el('subPhone').textContent = d.phone ? d.phone : '未设置';
+  el('subWx').textContent    = d.wechat ? '点击复制' : '未设置';
+  el('subMail').textContent  = d.email ? d.email : '未设置';
+  // 编辑表单回填
+  el('editName').value   = d.name;
+  el('editBizType').value= d.bizType;
+  el('editBizName').value= d.bizName;
+  el('editDesc').value   = d.desc;
+  el('editPhone').value  = d.phone;
+  el('editWechat').value = d.wechat;
+  el('editEmail').value  = d.email;
+  el('editMsgLink').value= d.msgLink;
+  el('editAddress').value= d.address;
+  // 二维码
+  const qrImg = el('qrImg'), qrPh = el('qrPlaceholder');
+  if(d.qr){ qrImg.src = d.qr; qrImg.style.display='block'; qrPh.style.display='none'; }
+  else    { qrImg.style.display='none'; qrPh.style.display='block'; }
+}
+
+function setAvatar(container, src){
+  container.innerHTML = '';
+  if(src){
+    const img = document.createElement('img');
+    img.src = src; img.alt='avatar';
+    container.appendChild(img);
+  }else{
+    container.innerHTML = '<span>📷</span>';
+    container.style.fontSize='34px';
+  }
+}
+
+// ========== 头像 / 二维码上传 ==========
+window._avatarData = null;
+window._qrData = null;
+
+function handleAvatar(input){
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e){
+    window._avatarData = e.target.result;
+    refreshCard();
+    toast('头像已更新 ✓');
+  };
+  reader.readAsDataURL(file);
+}
+
+function handleQr(input){
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e){
+    window._qrData = e.target.result;
+    refreshCard();
+    toast('二维码已更新 ✓');
+  };
+  reader.readAsDataURL(file);
+}
+
+// ========== 功能按钮 ==========
+function doCall(){
+  const d = loadData();
+  if(!d.phone){ toast('请先在「编辑名片信息」填写电话号码'); openEditor(); return; }
+  location.href = 'tel:' + d.phone;
+}
+function doEmail(){
+  const d = loadData();
+  if(!d.email){ toast('请先在「编辑名片信息」填写邮箱'); openEditor(); return; }
+  location.href = 'mailto:' + d.email;
+}
+function doMessage(){
+  const d = loadData();
+  if(d.msgLink) window.open(d.msgLink,'_blank');
+  else { toast('请先填写消息链接'); openEditor(); }
+}
+function showAddWx(){
+  const d = loadData();
+  if(d.wechat) toast('微信号：' + d.wechat + '\n在微信中搜索添加，或扫描二维码');
+  else { toast('请先填写微信号'); openEditor(); }
+}
+function copyField(key, label){
+  const d = loadData();
+  const val = d[key];
+  if(!val){ toast('请先填写'+label); openEditor(); return; }
+  copyToClipboard(val, label);
+}
+function copyToClipboard(text, label){
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(text).then(()=>toast(label+' 已复制 ✓')).catch(()=>{
+      const ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;opacity:0';
+      document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
+      toast(label+' 已复制 ✓');
+    });
+  }else{
+    const ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;opacity:0';
+    document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
+    toast(label+' 已复制 ✓');
+  }
+}
+function shareCard(){
+  const url = location.href;
+  if(navigator.share){
+    navigator.share({title:'我的商家名片', text:'点击名片，一键联系', url:url}).catch(()=>{});
+  }else{
+    copyToClipboard(url, '名片链接');
+    toast('链接已复制，粘贴到小红书/微信分享 ✓');
+  }
+}
+
+// ========== 导航 ==========
+function switchTab(name){
+  el('tabbar').style.display = 'flex';
+  el('page-card').classList.toggle('active', name==='card');
+  el('page-my').classList.toggle('active', name==='my');
+  el('page-edit').classList.remove('active');
+  el('tabCard').classList.toggle('active', name==='card');
+  el('tabMy').classList.toggle('active', name==='my');
+  el('navTitle').textContent = name==='card' ? '商家名片' : '我的';
+  el('navBack').style.display = 'none';
+  el('tabbar').style.display = 'flex';
+}
+function openEditor(){
+  el('page-card').classList.remove('active');
+  el('page-my').classList.remove('active');
+  el('page-edit').classList.add('active');
+  el('navTitle').textContent = '编辑名片信息';
+  el('navBack').style.display = 'flex';
+  el('tabbar').style.display = 'none';
+  el('mainApp').querySelector('.content').scrollTop = 0;
+}
+function closeEditor(){
+  refreshCard();
+  switchTab('my');
+}
+function goBack(){
+  const active = document.querySelector('.page.active');
+  if(active && active.id === 'page-edit') closeEditor();
+}
+function resetAll(){
+  if(confirm('确定清空所有名片信息？')){
+    localStorage.removeItem(KEY);
+    window._avatarData = null;
+    window._qrData = null;
+    refreshCard();
+    switchTab('card');
+    toast('已清空，请重新填写');
+  }
+}
+
+// ========== Toast ==========
+let toastTimer;
+function toast(msg){
+  const t = el('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=> t.classList.remove('show'), 2000);
+}
+
+// ========== 时间 ==========
+(function(){
+  function tick(){
+    const d=new Date();
+    el('time').textContent = String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+  }
+  tick(); setInterval(tick, 15000);
+})();
+
+// ========== 双击缩放阻止 ==========
+let lastT=0;
+document.addEventListener('touchend',e=>{
+  const n=Date.now();
+  if(n-lastT<300) e.preventDefault();
+  lastT=n;
+},{passive:false});
+
+// ========== 初始化 ==========
+refreshCard();
+</script>
+</body>
+</html>
