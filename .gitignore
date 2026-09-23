@@ -1,28 +1,24 @@
-# IDE
+﻿# IDE
 .idea/
 *.iml
 .vscode/
 
-# Maven
+# Maven（后端工程位于 backend/）
+backend/target/
 target/
 
-# Logs
+# 运行日志（本地运行产物，不入库）
+docs/logs/
 *.log
-run_boot.log
-run_boot_local.log
-run_local2.log
-build_*.txt
 
-# Local helper scripts (machine-specific paths)
-run_boot.bat
+# 本地启动脚本（含机器特定路径，仅供本机使用）
+scripts/
 
-# Temporary SQL scripts
-tmpseed.sql
-seed_test.sql
-cleanup_seed.sql
-fix_isdelete.sql
-D:/seed_clean.sql
-D:/fix_isdelete.sql
+# 临时 SQL 脚本 / 测试数据
+docs/sql/
+
+# 微信小游戏/小程序源码包（体积大，按需单独管理）
+frontend/wechat-app/
 
 # Agnes workspace
 .agnes/
