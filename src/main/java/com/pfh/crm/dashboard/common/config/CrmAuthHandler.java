@@ -48,4 +48,12 @@ public class CrmAuthHandler implements HandlerInterceptor {
 
         return true;
     }
+
+    /**
+     * 请求处理完毕后清理 ThreadLocal，防止内存泄漏
+     */
+    @Override
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
+        GlobalUserCache.clear();
+    }
 }

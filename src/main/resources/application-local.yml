@@ -1,0 +1,41 @@
+# 本地开发 profile：H2 内存数据库，无需外部 MySQL / 无需 SSL
+# 启动方式：mvn spring-boot:run -Dspring-boot.run.profiles=local
+# 或 IDE 里加 VM 参数：-Dspring.profiles.active=local
+server:
+  port: 8080
+  ssl:
+    enabled: false
+
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:crm;MODE=MySQL;DATABASE_TO_LOWER=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE;DB_CLOSE_DELAY=-1
+    username: sa
+    password: sa
+    initialization-mode: always
+    schema: classpath:schema-h2.sql
+    h2:
+      console:
+        enabled: true
+        path: /h2-console
+  servlet:
+    multipart:
+      max-file-size: 1MB
+      max-request-size: 100MB
+
+# 用假数据填充，避免占位符 xx 导致启动异常
+crm:
+  aliyun:
+    access-key-id: local-dev
+    endpoint: http://localhost
+    access-key-secret: local-dev
+    img-preview: http://localhost:8080/oss-preview/
+  internal:
+    app-id: local-dev
+    app-secret: local-dev
+    app-login-url: https://api.weixin.qq.com/sns/jscode2session
+    admin-api-key: local-admin-key
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

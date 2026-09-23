@@ -10,6 +10,7 @@ import com.pfh.crm.dashboard.common.config.CrmConfig;
 import com.pfh.crm.dashboard.common.constant.WxLoginEnum;
 import com.pfh.crm.dashboard.common.exception.BusinessException;
 import com.pfh.crm.dashboard.common.util.OkHttpUtil;
+import com.pfh.crm.dashboard.entity.dto.CardUpdateDTO;
 import com.pfh.crm.dashboard.entity.dto.UserRegister;
 import com.pfh.crm.dashboard.entity.dto.UserSettingDTO;
 import com.pfh.crm.dashboard.entity.dto.WxLogin;
@@ -18,90 +19,66 @@ import com.pfh.crm.dashboard.mapper.UserMapper;
 import com.pfh.crm.dashboard.service.IUserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * 用户服务实现
- *
- * appid	string		是	小程序 appId
- * secret	string		是	小程序 appSecret
- * js_code	string		是	登录时获取的 code
- * grant_type	string		是	授权类型，此处只需填写 authorization_code
- *
- * errcode 的合法值
- *
- * 值	说明	最低版本
- * -1	系统繁忙，此时请开发者稍候再试
- * 0	请求成功
- * 40029	code 无效
- * 45011	频率限制，每个用户每分钟100次
- *
  */
 @Slf4j
 @Service
-@Transactional(rollbackFor = {Exception.class,RuntimeException.class})
+@Transactional(rollbackFor = {Exception.class, RuntimeException.class})
 @AllArgsConstructor
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IUserService {
 
-    /**
-     * 内部配置
-     */
     private CrmConfig crmConfig;
-    /**
-     * 用户 mapper
-     */
     private UserMapper userMapper;
 
-    @Retryable(maxAttempts = 3
-            , backoff = @Backoff(delay = 2000L, multiplier = 1.5),include = {Exception.class,RuntimeException.class})
     @Override
     public WxLogin login(String code) {
-
-        Map<String,String> loginParams = new HashMap<>(4);
-        loginParams.put("appid",crmConfig.getAppId());
-        loginParams.put("secret",crmConfig.getAppSecret());
-        loginParams.put("js_code",code);
-        loginParams.put("grant_type","authorization_code");
+        Map<String, String> loginParams = new HashMap<>(4);
+        loginParams.put("appid", crmConfig.getAppId());
+        loginParams.put("secret", crmConfig.getAppSecret());
+        loginParams.put("js_code", code);
+        loginParams.put("grant_type", "authorization_code");
 
         String rst = OkHttpUtil.get(crmConfig.getAppLoginUrl(), loginParams);
-
-        log.debug("msg{}",rst);
+        log.debug("wx login response: {}", rst);
 
         WxLogin loginRst = JSON.parseObject(rst, WxLogin.class);
         Integer errCode = loginRst.getErrcode();
         WxLoginEnum loginEnum = WxLoginEnum.getByCode(errCode);
+        if (loginEnum == null) {
+            throw new BusinessException("微信登录失败，未知错误码: " + errCode);
+        }
         if (!WxLoginEnum.loginSuccess(loginEnum)) {
             throw new BusinessException(loginEnum.getMsg());
         }
-
         return loginRst;
-
     }
 
     @Override
     public User register(UserRegister userRegister) {
-
-        LambdaQueryWrapper<User> userQueryWrapper = Wrappers.<User>lambdaQuery().eq(User::getUnionId, userRegister.getUnionId());
+        LambdaQueryWrapper<User> userQueryWrapper = Wrappers.<User>lambdaQuery()
+                .eq(User::getUnionId, userRegister.getUnionId());
         User oldUser = getOne(userQueryWrapper, false);
 
         if (oldUser != null) {
             throw new BusinessException("用户已存在，请勿重复注册");
         }
 
-        User user = User.builder().headPic(userRegister.getAvatarUrl())
+        User user = User.builder()
+                .headPic(userRegister.getAvatarUrl())
                 .unionId(userRegister.getUnionId())
                 .username(userRegister.getNickName())
                 .sex(userRegister.getGender())
                 .build();
 
         userMapper.insert(user);
-
         return user;
     }
 
@@ -128,5 +105,88 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         old.setSex(userSettingDTO.getSex());
 
         updateById(old);
+    }
+
+    // ===== 名片相关 =====
+
+    @Override
+    public User getCard(String userId) {
+        User user = getById(userId);
+        if (user == null) {
+            throw new BusinessException("用户不存在");
+        }
+        return user;
+    }
+
+    @Override
+    public void updateCard(CardUpdateDTO dto) {
+        User user = getById(dto.getId());
+        if (user == null) {
+            throw new BusinessException("用户不存在");
+        }
+
+        if (!StringUtils.isEmpty(dto.getUsername())) {
+            user.setUsername(dto.getUsername());
+        }
+        if (!StringUtils.isEmpty(dto.getBizType())) {
+            user.setBizType(dto.getBizType());
+        }
+        if (!StringUtils.isEmpty(dto.getBizName())) {
+            user.setBizName(dto.getBizName());
+        }
+        if (!StringUtils.isEmpty(dto.getDescription())) {
+            user.setDescription(dto.getDescription());
+        }
+        if (!StringUtils.isEmpty(dto.getPhone())) {
+            user.setPhone(dto.getPhone());
+        }
+        if (!StringUtils.isEmpty(dto.getWechatId())) {
+            user.setWechatId(dto.getWechatId());
+        }
+        if (!StringUtils.isEmpty(dto.getEmail())) {
+            user.setEmail(dto.getEmail());
+        }
+        if (!StringUtils.isEmpty(dto.getMsgLink())) {
+            user.setMsgLink(dto.getMsgLink());
+        }
+        if (!StringUtils.isEmpty(dto.getAddress())) {
+            user.setAddress(dto.getAddress());
+        }
+        if (!StringUtils.isEmpty(dto.getGreeting())) {
+            user.setGreeting(dto.getGreeting());
+        }
+        if (!StringUtils.isEmpty(dto.getPlatform())) {
+            user.setPlatform(dto.getPlatform());
+        }
+        if (!StringUtils.isEmpty(dto.getHeadPic())) {
+            user.setHeadPic(dto.getHeadPic());
+        }
+        if (!StringUtils.isEmpty(dto.getQr())) {
+            user.setQr(dto.getQr());
+        }
+
+        updateById(user);
+    }
+
+    @Override
+    public void clearCard(String userId) {
+        User user = getById(userId);
+        if (user == null) {
+            throw new BusinessException("用户不存在");
+        }
+
+        user.setPhone(null);
+        user.setEmail(null);
+        user.setWechatId(null);
+        user.setDescription(null);
+        user.setGreeting(null);
+        user.setBizType(null);
+        user.setBizName(null);
+        user.setMsgLink(null);
+        user.setAddress(null);
+        user.setQr(null);
+        user.setPlatform(null);
+
+        updateById(user);
     }
 }

@@ -1,36 +1,40 @@
 server:
-#  port: 80
-  port: 443
+  port: 8080
+  # 本地开发用 HTTP；如需 HTTPS，启用下面配置并替换真实证书路径
+  # ssl:
+  #   enabled: true
+  #   key-store: your/keystore.jks
+  #   key-store-password: your-password
   ssl:
-#    https 证书
-    key-store: xx
-    key-store-password: xx
+    enabled: false
 spring:
   application:
     name: crm
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://xx:3306/crm?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
-    username: xx
-    password: xx
-#    url: jdbc:mysql://xx:3306/crm?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
-#    username: xx
-#    password: xx
+    # 默认连接本机 MySQL，可用环境变量 DB_HOST / DB_NAME / DB_USER / DB_PASS 覆盖
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:crm}?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    username: ${DB_USER:root}
+    password: ${DB_PASS:root}
   servlet:
     multipart:
       max-file-size: 1MB
       max-request-size: 100MB
+
 crm:
   aliyun:
-    access-key-id: xx
-    endpoint: xx
-    access-key-secret: xx
-    img-preview: xx
-#    微信小程序配置
+    # 图片/二维码上传到阿里云 OSS，通过环境变量覆盖；不配置则图片功能不可用
+    access-key-id: ${OSS_AK:xx}
+    endpoint: ${OSS_ENDPOINT:xx}
+    access-key-secret: ${OSS_SK:xx}
+    img-preview: ${OSS_IMG_PREVIEW:xx}
   internal:
-    app-id: xx
-    app-secret: xx
-    app-login-url: xx
+    # 微信小程序 AppID / AppSecret，通过环境变量 WX_APPID / WX_APPSECRET 覆盖
+    app-id: ${WX_APPID:your-wechat-appid}
+    app-secret: ${WX_APPSECRET:your-wechat-appsecret}
+    app-login-url: https://api.weixin.qq.com/sns/jscode2session
+    # 管理员接口鉴权 key（调用 /admin/** 时请求头带 X-Admin-Key），通过环境变量 ADMIN_KEY 覆盖
+    admin-api-key: ${ADMIN_KEY:admin-secret-key}
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

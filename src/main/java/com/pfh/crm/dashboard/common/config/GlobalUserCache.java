@@ -20,8 +20,13 @@ public class GlobalUserCache {
     }
 
     public static LoginUserCache get(){
-        LoginUserCache loginUserCache = userCacheThreadLocal.get();
+        return userCacheThreadLocal.get();
+    }
+
+    /**
+     * 请求结束后调用，清理 ThreadLocal，防止内存泄漏
+     */
+    public static void clear(){
         userCacheThreadLocal.remove();
-        return loginUserCache;
     }
 }

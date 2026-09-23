@@ -15,8 +15,7 @@ import com.pfh.crm.dashboard.common.util.ImgUtils;
 import com.pfh.crm.dashboard.common.util.QRUtil;
 import com.pfh.crm.dashboard.service.IUserService;
 import lombok.AllArgsConstructor;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,6 +24,7 @@ import java.awt.image.BufferedImage;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+@Slf4j
 @RequestMapping("qr")
 @RestController
 @AllArgsConstructor
@@ -44,25 +44,45 @@ public class QrController {
         } catch (MalformedURLException e) {
             throw new BusinessException("服务器忙请稍后再试试");
         }
-        byte[] bytes = create(loginUserCache, logoUrl);
+
+        // 手动重试，避免 @Retryable 在 private 方法上不生效的问题
+        byte[] bytes = null;
+        int attempts = 0;
+        int maxAttempts = CommonConstant.QR_CREATE_RETRIES;
+        while (attempts < maxAttempts) {
+            try {
+                bytes = doGenerateQr(loginUserCache, logoUrl);
+                break;
+            } catch (Exception e) {
+                log.warn("二维码生成失败，第 {} 次尝试", attempts + 1, e);
+                attempts++;
+                if (attempts >= maxAttempts) {
+                    throw new BusinessException("服务器忙请稍后再试试");
+                }
+                try {
+                    long delay = CommonConstant.QR_CREATE_DELAY * (long) Math.pow(CommonConstant.QR_CREATE_MULTIPLIER, attempts - 1);
+                    Thread.sleep(delay);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    throw new BusinessException("服务器忙请稍后再试试");
+                }
+            }
+        }
 
         String qrUrl = aliyunOSSConfig.getImgPreview() + AliyunOSSUtils.uploadImg(bytes);
 
-        CrmQrResult qrResult = CrmQrResult.builder().qrUrl(qrUrl).timeOutSeconded(CommonConstant.QR_TIMEOUT_SECONDED).build();
+        CrmQrResult qrResult = CrmQrResult.builder()
+                .qrUrl(qrUrl)
+                .timeOutSeconded(CommonConstant.QR_TIMEOUT_SECONDED)
+                .build();
 
         return Result.ok(qrResult);
     }
 
-    @Retryable(value = BusinessException.class, maxAttempts = 3
-            , backoff = @Backoff(delay = 2000L, multiplier = 1.5))
-    private byte[] create(LoginUserCache loginUserCache, URL logoUrl) {
-        try {
-            String unionId = QrHolder.set(loginUserCache.getUserId());
-            BufferedImage bufferedImage = QRUtil.builder().width(400).height(400).build().qrEncode(unionId, logoUrl);
-            return ImgUtils.image2Stream(bufferedImage).toByteArray();
-        } catch (Exception e) {
-            throw new BusinessException("服务器忙请稍后再试试");
-        }
+    private byte[] doGenerateQr(LoginUserCache loginUserCache, URL logoUrl) throws Exception {
+        String unionId = QrHolder.set(loginUserCache.getUserId());
+        BufferedImage bufferedImage = QRUtil.builder().width(400).height(400).build().qrEncode(unionId, logoUrl);
+        return ImgUtils.image2Stream(bufferedImage).toByteArray();
     }
 
 }

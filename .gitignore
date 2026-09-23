@@ -1,33 +1,32 @@
-HELP.md
-4213900_www.pengfh.com.pfx
-target/
-!.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**
-!**/src/test/**
-
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-
-### IntelliJ IDEA ###
-.idea
-*.iws
+# IDE
+.idea/
 *.iml
-*.ipr
-
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-build/
-
-### VS Code ###
 .vscode/
-*.DS_Store
+
+# Maven
+target/
+
+# Logs
+*.log
+run_boot.log
+run_boot_local.log
+run_local2.log
+build_*.txt
+
+# Local helper scripts (machine-specific paths)
+run_boot.bat
+
+# Temporary SQL scripts
+tmpseed.sql
+seed_test.sql
+cleanup_seed.sql
+fix_isdelete.sql
+D:/seed_clean.sql
+D:/fix_isdelete.sql
+
+# Agnes workspace
+.agnes/
+
+# OS
+.DS_Store
+Thumbs.db

@@ -32,16 +32,19 @@ public class RateLimiterAspect {
         MethodSignature signature = (MethodSignature) point.getSignature();
         Method method = signature.getMethod();
 
+        // 使用 类名+方法名 作为 key，避免不同 Controller 中同名方法共享限流器
+        String cacheKey = method.getDeclaringClass().getSimpleName() + "." + method.getName();
+
         SelfLimiter rateLimiter = AnnotationUtils.findAnnotation(method, SelfLimiter.class);
         if (rateLimiter != null && rateLimiter.limit() > 0) {
             double limit = rateLimiter.limit();
-            if (rateLimiterCache.get(method.getName()) == null) {
-                rateLimiterCache.put(method.getName(), RateLimiter.create(limit));
+            if (rateLimiterCache.get(cacheKey) == null) {
+                rateLimiterCache.putIfAbsent(cacheKey, RateLimiter.create(limit));
             }
 
-            log.info("限流设置为: " + rateLimiterCache.get(method.getName()).getRate());
+            log.debug("限流设置为: {}", rateLimiterCache.get(cacheKey).getRate());
             // 尝试获取令牌
-            if (rateLimiterCache.get(method.getName()) != null && !rateLimiterCache.get(method.getName()).tryAcquire(rateLimiter.timeout(), rateLimiter.timeUnit())) {
+            if (rateLimiterCache.get(cacheKey) != null && !rateLimiterCache.get(cacheKey).tryAcquire(rateLimiter.timeout(), rateLimiter.timeUnit())) {
                 log.info("点太快了，等会儿~");
                 throw new BusinessException("点太快了，等会儿~");
             }

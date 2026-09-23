@@ -23,4 +23,8 @@ public class CrmConfig {
 
     private String appLoginUrl;
 
+    /**
+     * 管理员接口 API key
+     */
+    private String adminApiKey;
 }

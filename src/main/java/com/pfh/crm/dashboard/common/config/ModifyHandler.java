@@ -21,8 +21,8 @@ import java.util.Set;
  *
  * @author pengfh
  * @see CreateTime 创建时间，新增时自动注入，修改不变
- * @see UpdateTime 修改时间，修改时自动注入
- * @see Delete 删除标识，新增时自动注入
+ * @see UpdateTime 修改时间，新增/修改时自动注入
+ * @see Delete 删除标识，新增时自动注入默认值（未删除=0）
  */
 @Slf4j
 @Component
@@ -67,10 +67,10 @@ public class ModifyHandler implements MetaObjectHandler {
     }
 
     /**
-     * 注入更新时间，如果字段有{@link CreateTime} 注解
+     * 注入创建时间，如果字段有{@link CreateTime} 注解
      *
      * @param metaObject 数据库操作对象
-     * @param field 更新字段
+     * @param field 创建时间字段
      */
     private void processCreateTime(MetaObject metaObject,Field field){
         boolean createTimePresent = field.isAnnotationPresent(CreateTime.class);
@@ -92,7 +92,7 @@ public class ModifyHandler implements MetaObjectHandler {
      * 注入更新时间，如果字段有{@link UpdateTime} 注解
      *
      * @param metaObject 数据库操作对象
-     * @param field 更新字段
+     * @param field 更新时间字段
      */
     private void processUpdateTime(MetaObject metaObject,Field field){
         boolean updateTimePresent = field.isAnnotationPresent(UpdateTime.class);
@@ -110,10 +110,10 @@ public class ModifyHandler implements MetaObjectHandler {
     }
 
     /**
-     * 注入更新时间，如果字段有{@link Delete} 注解
+     * 注入删除标识，如果字段有{@link Delete} 注解
      *
      * @param metaObject 数据库操作对象
-     * @param field 更新字段
+     * @param field 删除标识字段
      */
     private void processDelete(MetaObject metaObject,Field field){
         boolean deletePresent = field.isAnnotationPresent(Delete.class);
@@ -127,7 +127,9 @@ public class ModifyHandler implements MetaObjectHandler {
                 deleteFieldName = deleteValue;
             }
 
-            this.setFieldValByName(deleteFieldName, 1, metaObject);
+            // 新增记录默认「未删除」(is_delete=0)；软删除标志 1=已删除 0=未删除，
+            // 只有显式删除操作才会置 1（与建表注释一致）
+            this.setFieldValByName(deleteFieldName, 0, metaObject);
         }
     }
 
