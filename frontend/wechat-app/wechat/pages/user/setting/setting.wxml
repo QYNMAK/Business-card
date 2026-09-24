@@ -1,0 +1,103 @@
+<view class="edit-page">
+  <view class="edit-scroll">
+
+    <!-- 头像 -->
+    <view class="ed-section">
+      <view class="ed-label">头像</view>
+      <view class="avatar-row">
+        <view class="avatar-pick" bindtap="uploadImage" data-kind="head">
+          <block wx:if="{{headPreview}}">
+            <image class="avatar-preview" src="{{headPreview}}" mode="aspectFill"></image>
+            <view class="avatar-change">更换</view>
+          </block>
+          <block wx:else>
+            <view class="avatar-add"><text>＋</text></view>
+          </block>
+        </view>
+        <view class="avatar-remove" wx:if="{{headPreview}}" bindtap="removeImage" data-kind="head">移除</view>
+      </view>
+    </view>
+
+    <!-- 基本信息 -->
+    <view class="ed-section">
+      <view class="ed-label">基本信息</view>
+      <view class="ed-item">
+        <view class="ed-name">姓名</view>
+        <input class="ed-input" data-name="username" value="{{card.username}}" bindinput="bindInput" placeholder="请输入姓名 / 昵称" />
+      </view>
+      <view class="ed-item">
+        <view class="ed-name">业务类型</view>
+        <input class="ed-input" data-name="bizType" value="{{card.bizType}}" bindinput="bindInput" placeholder="如：餐饮 / 设计 / 健身" />
+      </view>
+      <view class="ed-item">
+        <view class="ed-name">业务名称</view>
+        <input class="ed-input" data-name="bizName" value="{{card.bizName}}" bindinput="bindInput" placeholder="如：老王牛肉面" />
+      </view>
+      <view class="ed-item">
+        <view class="ed-name">所在平台</view>
+        <picker class="ed-picker" range="{{platformList}}" value="{{platformIndex}}" bindchange="bindPlatformChange">
+          <view class="ed-picker-val {{platformIndex < 0 ? 'ed-placeholder' : ''}}">
+            {{platformIndex >= 0 ? platformList[platformIndex] : '请选择'}}
+          </view>
+        </picker>
+      </view>
+      <view class="ed-item ed-item-td">
+        <view class="ed-name">一句话介绍</view>
+        <textarea class="ed-textarea" data-name="description" value="{{card.description}}" bindinput="bindInput" placeholder="简要介绍你或你的业务" />
+      </view>
+      <view class="ed-item ed-item-td">
+        <view class="ed-name">问候语</view>
+        <input class="ed-input" data-name="greeting" value="{{card.greeting}}" bindinput="bindInput" placeholder="如：很高兴认识你" />
+      </view>
+    </view>
+
+    <!-- 联系方式 -->
+    <view class="ed-section">
+      <view class="ed-label">联系方式</view>
+      <view class="ed-item">
+        <view class="ed-name">电话</view>
+        <input class="ed-input" type="number" data-name="phone" value="{{card.phone}}" bindinput="bindInput" placeholder="手机号 / 座机" />
+      </view>
+      <view class="ed-item">
+        <view class="ed-name">微信号</view>
+        <input class="ed-input" data-name="wechatId" value="{{card.wechatId}}" bindinput="bindInput" placeholder="微信号" />
+      </view>
+      <view class="ed-item">
+        <view class="ed-name">邮箱</view>
+        <input class="ed-input" data-name="email" value="{{card.email}}" bindinput="bindInput" placeholder="邮箱" />
+      </view>
+      <view class="ed-item">
+        <view class="ed-name">消息链接</view>
+        <input class="ed-input" data-name="msgLink" value="{{card.msgLink}}" bindinput="bindInput" placeholder="平台私信 / 主页 URL" />
+      </view>
+    </view>
+
+    <!-- 地址 -->
+    <view class="ed-section">
+      <view class="ed-label">所在地</view>
+      <view class="ed-item ed-item-td">
+        <input class="ed-input" data-name="address" value="{{card.address}}" bindinput="bindInput" placeholder="省 / 市 / 详细地址" />
+      </view>
+    </view>
+
+    <!-- 微信二维码图 -->
+    <view class="ed-section">
+      <view class="ed-label">微信二维码图片</view>
+      <view class="avatar-row">
+        <view class="qr-pick" bindtap="uploadImage" data-kind="qr">
+          <block wx:if="{{qrPreview}}">
+            <image class="qr-preview" src="{{qrPreview}}" mode="aspectFit"></image>
+          </block>
+          <block wx:else>
+            <view class="qr-add"><text>＋ 上传</text></view>
+          </block>
+        </view>
+        <view class="avatar-remove" wx:if="{{qrPreview}}" bindtap="removeImage" data-kind="qr">移除</view>
+      </view>
+    </view>
+
+    <!-- 保存 -->
+    <button class="ed-save" bindtap="saveCard" disabled="{{saving}}">{{saving ? '保存中…' : '保存名片'}}</button>
+    <view class="ed-space"></view>
+  </view>
+</view>

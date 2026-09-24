@@ -1,0 +1,152 @@
+<view class="add-container">
+	<view class="page-body">
+		<form class="form-add" catchsubmit="formSubmit" catchreset="formReset">
+			<!-- id -->
+			<view hidden="true" class="form-item form-item-name form-item-2 " style="flex-direction:row;">
+				<view class="form-item-lable">
+					id
+				</view>
+				<view class="form-item-input-box">
+					<input class="form-item-input" value="{{user.id}}" name="id" placeholder="id" />
+				</view>
+			</view>
+
+			<view class="form-item form-item-name form-item-2 " style="flex-direction:row;">
+				<view class="form-item-lable">
+					姓名
+				</view>
+				<view class="form-item-input-box">
+					<input class="form-item-input" value="{{user.name}}" name="name" placeholder="请输入联系人姓名" />
+				</view>
+			</view>
+			<!-- 性别 -->
+			<view class="form-item form-item-sex form-item-2 " style="flex-direction:row;">
+				<view class="form-item-lable">
+					性别
+				</view>
+				<view class="form-item-input-box">
+					<radio-group name="sex" class="radio-group">
+						<radio class="radio sex-radio" checked="true || {{user.sex == 1}}" data-gname="g1" wx:key="sex" value="1">
+							<text>男</text>
+						</radio>
+						<radio class="radio" data-gname="g2" checked="{{user.sex == 0}}" wx:key="sex" value="0">
+							<text>女</text>
+						</radio>
+					</radio-group>
+				</view>
+			</view>
+			<!-- 电话 -->
+			<view class="form-phone form-item-name form-item-2 " style="flex-direction:row;">
+				<view class="form-item-lable">
+					手机号码
+				</view>
+
+					
+
+					<block wx:for="{{phoneNums}}" wx:for-item="phoneNum" wx:key="index">
+						<view class="form-item-input-box form-phone-box">
+							<input class="form-item-input" data-index="{{index}}" value="{{phoneNum}}" bindinput="bindPhoneNum" maxlength="11" type="number" name="phone" placeholder="请输入联系人手机号" />
+							<block wx:if="{{phoneNums.length == index+1}}">
+								<mp-icon  bindtap="addPhoneNum" data-tel="{{phoneNums[index]}}" icon="add2" color="#3196ff" size="{{25}}"></mp-icon>
+							</block>
+							<block wx:else>
+								<mp-icon  bindtap="removePhoneNum" data-index="{{index}}"  icon="close2" color="#3196ff" size="{{25}}"></mp-icon>
+							</block>
+						</view>
+					</block>
+
+					
+				
+			</view>
+
+			<!-- 所在区域 -->
+			<view class="form-item form-item-name form-item-2 " style="flex-direction:row;">
+				<view class="form-item-lable">
+					所在区域
+				</view>
+				<view class="form-item-input-box">
+					<picker name="region" mode="region" bindchange="bindRegionChange" value="{{region}}" custom-item="{{customItem}}">
+						<view class="picker {{!regionPickerActive ? 'regionHint':''}}">
+							{{regionSelected}}
+						</view>
+					</picker>
+				</view>
+			</view>
+
+			<!-- 详细地址 -->
+			<view class="form-item form-item-addr form-item-2 " style="flex-direction:row;">
+				<view class="form-item-lable">
+					详细地址
+				</view>
+				<view class="form-item-input-box">
+					<input class="form-item-input " value="{{user.address}}" maxlength="50" name="address" placeholder="请输入详细地址" />
+				</view>
+			</view>
+
+			<!-- 备注 -->
+			<view class="form-item form-item-addr form-item-2 " style="flex-direction:row;">
+				<view class="form-item-lable">
+					备注
+				</view>
+				<view class="form-item-input-box">
+					<input class="form-item-input " value="{{user.remark}}" maxlength="500" confirm-type="done" type="text" name="remark" placeholder="请输入备注" />
+				</view>
+			</view>
+
+			<!-- 关联客户 -->
+			<view class="form-item form-item-relation-customer form-item-2 " style="flex-direction:row;">
+				<view class="form-item-lable">
+					关联客户
+				</view>
+				<view class="form-item-input-box form-item-relation-customer-next-box">
+					<label>去关联亲属<image bindtap="relationCustomer" class="form-item-relation-customer-next" src="../../../images/next.png" mode="cover"></image></label>
+					<view class="relation-customer-container" style="flex-direction:row;">
+						<view class="relation-customer-item " hidden="{{relationUsers.length<=1}}">
+							<image bindtap="relationCustomerAll" class="relation-customer-item-img" src="../../../images/timg (1).png" mode="cover"></image>
+							<view class="relation-customer-item-name">查看全部</view>
+						</view>
+						<block wx:for="{{relationUsers}}" wx:for-item="user" wx:key="*this">
+							<view class="relation-customer-item" wx:if="{{index <= 0}}">
+
+								<block wx:if="{{user.previewImg}}">
+									<image class="relation-customer-item-img" src="{{user.previewImg}}" mode="cover"></image>
+								</block>
+								<block wx:else>
+									<view class="relation-customer-item-img relation-customer-item-img-none">{{user.showName}}</view>
+								</block>
+
+								<icon size="18" color="#000" type='cancel' catchtap="relationCustomerItemCancel" class="relation-customer-item-cancel" data-index="{{index}}" />
+								<view class="relation-customer-item-name">{{user.showName}}</view>
+							</view>
+						</block>
+
+					</view>
+				</view>
+			</view>
+
+			<!-- 图片附件 -->
+			<view class="form-item-img form-item form-item-fiel form-item-2 " style="flex-direction:row;">
+				<view class="form-item-lable">
+					图片({{imgs.length}}/{{uploadLimit}})
+				</view>
+			</view>
+			<view class="img-upload-container">
+
+				<block wx:for="{{imgs}}" wx:for-item="item" wx:key="*this">
+					<view class="img-upload-item">
+						<image bindtap="imgPreview" mode="aspectFill" class="img-upload-add img-upload-item-img" data-index="{{index}}" src="{{previewImgUrl}}{{item}}"></image>
+						<icon size="18" type='cancel' color="#000" class="img-upload-remove" data-index="{{index}}" catchtap="uploadRemove"></icon>
+					</view>
+				</block>
+				<view bindtap="imgUpload" class="img-upload">
+					<image class="img-upload-img" data-index="{{index}}" src="../../../images/upload_add.png"></image>
+				</view>
+			</view>
+
+			<view class="form-btn-box">
+				<button class="form-btn-sub" type="primary" formType="submit">提交</button>
+			</view>
+		</form>
+	</view>
+
+</view>

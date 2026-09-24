@@ -1213,7 +1213,7 @@
     }
     async function resetAll() {
       if (!token()) {toast('请先连接'); return;}
-      if (!confirm('确定清空所有名片信息？（调用后端 /card/clear）')) return;
+      if (!confirm('确定清空所有名片信息？')) return;//（调用后端 / card / clear）
       try {
         await api('/card/clear', {method: 'POST'});
         window._avatarData = null; window._qrData = null; window._avatarOss = null; window._qrOss = null;

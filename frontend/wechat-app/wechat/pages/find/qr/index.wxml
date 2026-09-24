@@ -1,0 +1,82 @@
+<view class="card-page">
+  <!-- 顶部渐变头图 -->
+  <view class="hero">
+    <view class="hero-bg"></view>
+    <view class="hero-content">
+      <view class="hero-avatar" bindtap="toEdit">
+        <block wx:if="{{card.headPic}}">
+          <image class="avatar-img" src="{{card.headPic}}" mode="aspectFill"></image>
+        </block>
+        <block wx:else>
+          <view class="avatar-placeholder">
+            <text class="avatar-initial">{{card.username ? card.username[0] : '我'}}</text>
+          </view>
+        </block>
+        <view class="avatar-edit-badge">编辑</view>
+      </view>
+      <view class="hero-name">
+        <text class="hero-name-text">{{card.username || '未设置姓名'}}</text>
+        <view class="hero-platform" wx:if="{{card.platform}}">
+          <text class="platform-tag">{{card.platform}}</text>
+        </view>
+      </view>
+      <view class="hero-biz" wx:if="{{card.title}}">{{card.title}}</view>
+      <view class="hero-desc" wx:if="{{card.description}}">{{card.description}}</view>
+      <view class="hero-greeting" wx:if="{{card.greeting}}">「{{card.greeting}}」</view>
+    </view>
+  </view>
+
+  <!-- 名片卡 -->
+  <view class="card-panel">
+    <!-- 联系方式 -->
+    <view class="sec-title">联系方式</view>
+    <view class="contact-list" wx:if="{{card.contacts.length}}">
+      <view class="contact-item" wx:for="{{card.contacts}}" wx:key="type">
+        <view class="contact-icon contact-{{item.type}}">
+          <text wx:if="{{item.type=='phone'}}">📞</text>
+          <text wx:elif="{{item.type=='email'}}">✉️</text>
+          <text wx:elif="{{item.type=='copy'}}">💬</text>
+          <text wx:else>🔗</text>
+        </view>
+        <view class="contact-body">
+          <view class="contact-label">{{item.label}}</view>
+          <view class="contact-value">{{item.value}}</view>
+        </view>
+        <view class="contact-action" wx:if="{{item.type=='phone'}}" data-value="{{item.value}}" data-type="{{item.type}}" bindtap="copyField">拨打</view>
+        <view class="contact-action" wx:elif="{{item.type=='link'}}" data-value="{{item.value}}" bindtap="openLink">复制</view>
+        <view class="contact-action" wx:else data-value="{{item.value}}" data-type="{{item.type}}" bindtap="copyField">复制</view>
+      </view>
+    </view>
+    <view class="contact-empty" wx:else>暂无联系方式，点击下方「编辑名片」完善</view>
+
+    <!-- 地址 -->
+    <view class="sec-title" wx:if="{{card.addressFull}}">所在地</view>
+    <view class="address-line" wx:if="{{card.addressFull}}">{{card.addressFull}}</view>
+  </view>
+
+  <!-- 二维码 -->
+  <view class="qr-panel">
+    <view class="sec-title">名片二维码</view>
+    <view class="qr-wrap">
+      <block wx:if="{{qrUrl}}">
+        <image class="qr-img" src="{{qrUrl}}" mode="aspectFit" bindtap="previewQr" show-menu-by-longpress></image>
+      </block>
+      <view class="qr-empty" wx:else>
+        <text>二维码生成中…</text>
+      </view>
+      <view class="qr-tip">扫一扫，查看我的名片</view>
+    </view>
+    <view class="qr-actions">
+      <view class="qr-btn" bindtap="saveQr">保存到相册</view>
+      <button class="qr-btn qr-btn-share" open-type="share">分享名片</button>
+    </view>
+  </view>
+
+  <!-- 底部操作 -->
+  <view class="footer-actions">
+    <view class="footer-btn footer-btn-primary" bindtap="toEdit">编辑名片</view>
+    <view class="footer-btn footer-btn-ghost" wx:if="{{hasCard}}" bindtap="clearCard">清空</view>
+  </view>
+
+  <view class="err-toast" wx:if="{{loadError}}" bindtap="refresh">{{loadError}}（点击重试）</view>
+</view>

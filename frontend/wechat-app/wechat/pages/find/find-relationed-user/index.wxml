@@ -1,0 +1,23 @@
+<view class="relationed-num">已关联{{relationUsers.length}}人</view>
+<view class="relation-container">
+
+	<block wx:for="{{relationUsers}}" wx:for-item="user" wx:key="*this">
+		<view class="relation-customer-item">
+
+			<block wx:if="{{user.previewImg}}">
+				<image bindtap="relationCustomer" class="relation-customer-item-img" src="{{user.previewImg}}" mode="cover"></image>
+			</block>
+			<block wx:else>
+				<view class="userinfo-avatar userinfo-avatar-for-name">{{user.showName}}</view>
+			</block>
+
+			<icon size="18" color="#000" type='cancel' catchtap="relationCustomerItemCancel" class="relation-customer-item-cancel" data-index="{{index}}" />
+			<view class="relation-customer-item-name">{{user.showName}}</view>
+		</view>
+		<view class="relation-add-icon">+</view>
+	</block>
+	<view class="relation-customer-item relation-customer-btn" bindlongtap="relationCustomer">
+		<image bindtap="relationCustomer" class="relation-customer-item-img" src="../../../images/find_user_relation.png" mode="cover"></image>
+		<view class="relation-customer-item-name">{{user.name}}</view>
+	</view>
+</view>

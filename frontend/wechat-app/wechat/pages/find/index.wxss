@@ -1,0 +1,54 @@
+/* 发现页 */
+.find-page { min-height: 100vh; background: #f3f5f9; padding: 24rpx 28rpx 60rpx; }
+.scan-hero {
+  position: relative; overflow: hidden; border-radius: 28rpx;
+  padding: 48rpx 0; text-align: center;
+}
+.scan-hero-bg {
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, #3a86ff 0%, #6a5cff 55%, #9b5cff 100%);
+}
+.scan-hero view:not(.scan-hero-bg) { position: relative; z-index: 1; }
+.scan-ico {
+  color: #fff; font-size: 80rpx; line-height: 1;
+  text-shadow: 0 4rpx 16rpx rgba(0,0,0,0.2);
+}
+.scan-title { color: #fff; font-size: 36rpx; font-weight: 700; margin-top: 12rpx; }
+.scan-sub { color: rgba(255,255,255,0.85); font-size: 24rpx; margin-top: 8rpx; }
+
+.quick-row { margin-top: 24rpx; }
+.quick-item {
+  background: #fff; border-radius: 20rpx; padding: 28rpx;
+  display: flex; flex-direction: row; align-items: center;
+  box-shadow: 0 4rpx 16rpx rgba(30,50,90,0.05);
+}
+.quick-ico {
+  width: 64rpx; height: 64rpx; border-radius: 16rpx;
+  background: #eef4ff; color: #3a86ff; font-size: 32rpx;
+  display: flex; align-items: center; justify-content: center;
+  margin-right: 20rpx;
+}
+.quick-name { font-size: 30rpx; font-weight: 600; color: #2a2f3a; flex: 1; }
+.quick-sub { font-size: 22rpx; color: #98a1b3; }
+
+.recent-sec { margin-top: 28rpx; }
+.recent-title { font-size: 24rpx; color: #98a1b3; font-weight: 600; letter-spacing: 2rpx; margin-bottom: 16rpx; }
+.recent-list { }
+.recent-item {
+  display: flex; flex-direction: row; align-items: center;
+  background: #fff; border-radius: 20rpx; padding: 22rpx 24rpx;
+  margin-bottom: 14rpx; box-shadow: 0 4rpx 16rpx rgba(30,50,90,0.05);
+}
+.r-avatar { width: 80rpx; height: 80rpx; flex-shrink: 0; }
+.r-avatar-img { width: 80rpx; height: 80rpx; border-radius: 50%; background: #f7f9fc; }
+.r-avatar-ph {
+  width: 80rpx; height: 80rpx; border-radius: 50%;
+  background: linear-gradient(135deg, #eef4ff, #efe9ff);
+  color: #6a5cff; font-size: 38rpx; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+.r-info { margin-left: 20rpx; flex: 1; }
+.r-name { font-size: 30rpx; font-weight: 600; color: #2a2f3a; }
+.r-biz { font-size: 24rpx; color: #8a93a6; margin-top: 4rpx; }
+.r-arrow { color: #c5ccda; font-size: 40rpx; }
+.find-empty { text-align: center; color: #98a1b3; font-size: 26rpx; padding-top: 40rpx; }

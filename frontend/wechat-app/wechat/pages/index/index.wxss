@@ -1,0 +1,48 @@
+/* 联系人（名片夹）页 */
+.contacts-page { min-height: 100vh; background: #f3f5f9; }
+.ct-search {
+  position: sticky; top: 0; z-index: 10;
+  background: #f3f5f9; padding: 20rpx 28rpx 12rpx;
+}
+.ct-search-bar {
+  display: flex; flex-direction: row; align-items: center;
+  background: #fff; border-radius: 18rpx; padding: 12rpx 24rpx;
+  box-shadow: 0 4rpx 16rpx rgba(30,50,90,0.05);
+}
+.ct-search-ico { font-size: 28rpx; margin-right: 14rpx; }
+.ct-search-input { flex: 1; font-size: 28rpx; color: #2a2f3a; }
+.ct-scan {
+  margin-left: 16rpx; font-size: 24rpx; font-weight: 600; color: #fff;
+  background: linear-gradient(135deg, #3a86ff, #9b5cff);
+  padding: 8rpx 22rpx; border-radius: 28rpx; flex-shrink: 0;
+}
+.ct-body { padding: 16rpx 28rpx; }
+.ct-count { font-size: 22rpx; color: #98a1b3; margin: 12rpx 0 16rpx; }
+.ct-card {
+  display: flex; flex-direction: row; align-items: center;
+  background: #fff; border-radius: 20rpx; padding: 24rpx;
+  margin-bottom: 16rpx; box-shadow: 0 4rpx 16rpx rgba(30,50,90,0.05);
+}
+.ct-avatar { width: 96rpx; height: 96rpx; flex-shrink: 0; }
+.ct-avatar-img { width: 96rpx; height: 96rpx; border-radius: 50%; background: #f7f9fc; }
+.ct-avatar-ph {
+  width: 96rpx; height: 96rpx; border-radius: 50%;
+  background: linear-gradient(135deg, #eef4ff, #efe9ff);
+  color: #6a5cff; font-size: 44rpx; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+.ct-info { margin-left: 22rpx; flex: 1; overflow: hidden; }
+.ct-name { font-size: 32rpx; font-weight: 700; color: #2a2f3a; }
+.ct-tag {
+  display: inline-block; font-size: 20rpx; color: #3a86ff;
+  background: #eef4ff; border-radius: 18rpx; padding: 2rpx 14rpx;
+  margin-left: 12rpx; vertical-align: middle; font-weight: 500;
+}
+.ct-biz { font-size: 26rpx; color: #4a5266; margin-top: 6rpx; }
+.ct-sub { font-size: 24rpx; color: #8a93a6; margin-top: 8rpx; }
+.ct-wechat { margin-left: 20rpx; }
+.ct-arrow { color: #c5ccda; font-size: 44rpx; line-height: 1; flex-shrink: 0; }
+.ct-empty { text-align: center; padding-top: 140rpx; }
+.ct-empty-ico { font-size: 90rpx; }
+.ct-empty-title { font-size: 32rpx; color: #4a5266; font-weight: 600; margin-top: 24rpx; }
+.ct-empty-sub { font-size: 24rpx; color: #98a1b3; margin-top: 12rpx; }

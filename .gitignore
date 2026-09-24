@@ -1,4 +1,4 @@
-﻿# IDE
+# IDE
 .idea/
 *.iml
 .vscode/
@@ -17,12 +17,14 @@ scripts/
 # 临时 SQL 脚本 / 测试数据
 docs/sql/
 
-# 微信小游戏/小程序源码包（体积大，按需单独管理）
-frontend/wechat-app/
-
 # Agnes workspace
 .agnes/
 
 # OS
 .DS_Store
 Thumbs.db
+
+# macOS 解压垃圾 / 压缩包 / 编辑器私有配置
+__MACOSX/
+*.zip
+project.private.config.json

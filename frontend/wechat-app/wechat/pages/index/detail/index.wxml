@@ -1,0 +1,64 @@
+<view class="detail-page">
+  <block wx:if="{{hasCard}}">
+    <!-- 头部 -->
+    <view class="d-hero">
+      <view class="d-hero-bg"></view>
+      <view class="d-row">
+        <view class="d-avatar">
+          <block wx:if="{{card.headPic}}"><image class="d-avatar-img" src="{{card.headPic}}" mode="aspectFill"></image></block>
+          <block wx:else><view class="d-avatar-ph">{{card.username ? card.username[0] : '?'}}</view></block>
+        </view>
+        <view class="d-info">
+          <view class="d-name">{{card.username || '未知'}}</view>
+          <view class="d-biz" wx:if="{{card.title}}">{{card.title}}</view>
+          <view class="d-desc" wx:if="{{card.description}}">{{card.description}}</view>
+        </view>
+      </view>
+      <view class="d-tags" wx:if="{{card.platform}}">
+        <text class="d-tag">{{card.platform}}</text>
+        <text class="d-tag" wx:if="{{card.showBiz}}">{{card.showBiz}}</text>
+      </view>
+    </view>
+
+    <!-- 问候语 -->
+    <view class="d-greet" wx:if="{{card.greeting}}">「{{card.greeting}}」</view>
+
+    <!-- 联系方式 -->
+    <view class="d-panel">
+      <view class="d-label">联系方式</view>
+      <block wx:if="{{card.contacts.length}}">
+        <view class="d-contact" wx:for="{{card.contacts}}" wx:key="type">
+          <view class="d-c-ico">{{item.label}}</view>
+          <view class="d-c-val">{{item.value}}</view>
+          <view class="d-c-btn" data-value="{{item.value}}" data-type="{{item.type}}" bindtap="copyField">
+            {{item.type == 'phone' ? '拨打' : '复制'}}
+          </view>
+        </view>
+      </block>
+      <view class="d-contact-empty" wx:else>暂无联系方式</view>
+    </view>
+
+    <!-- 所在地 -->
+    <view class="d-panel" wx:if="{{card.addressFull}}">
+      <view class="d-label">所在地</view>
+      <view class="d-addr">{{card.addressFull}}</view>
+    </view>
+
+    <!-- 二维码 -->
+    <view class="d-panel" wx:if="{{card.qr}}">
+      <view class="d-label">微信二维码</view>
+      <view class="d-qr-wrap">
+        <image class="d-qr-img" src="{{card.qr}}" mode="aspectFit" show-menu-by-longpress></image>
+      </view>
+    </view>
+
+    <!-- 操作 -->
+    <view class="d-actions">
+      <button class="d-share" open-type="share">分享名片</button>
+    </view>
+  </block>
+
+  <view class="d-empty" wx:else>
+    <view>名片不存在或已失效</view>
+  </view>
+</view>

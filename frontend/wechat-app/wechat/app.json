@@ -1,0 +1,53 @@
+{
+  "pages":[
+    "pages/find/qr/index", 
+    "pages/user/user",
+    "pages/user/setting/setting",
+    "pages/index/index",
+    "pages/find/find-add/index",
+    "pages/find/qr-scan/index",
+    "pages/index/detail/index",
+    "pages/find/index",
+    "pages/find/find-relationed-user/index",
+    "pages/find/find-relation-customer/index",
+    "pages/login/index"
+  ],
+  "window":{
+    "backgroundTextStyle":"light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "WeChat",
+    "navigationBarTextStyle":"black"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "tabBar": {
+    "color": "#515151",
+    "selectedColor": "#3196ff",
+    "borderStyle": "white",
+    "list": [
+      {
+        "selectedIconPath": "images/postcard_selected.png",
+        "iconPath": "images/postcard_normal.png",
+        "pagePath": "pages/find/qr/index",
+        "text": "明片"
+      },
+      {
+        "selectedIconPath": "images/find_selected.png",
+        "iconPath": "images/find_normal.png",
+        "pagePath": "pages/find/index",
+        "text": "发现"
+      },
+      {
+        "selectedIconPath": "images/contract_selected.png",
+        "iconPath": "images/contract_normal.png",
+        "pagePath": "pages/index/index",
+        "text": "联系人"
+      },
+      {
+        "selectedIconPath": "images/mine_selected.png",
+        "iconPath": "images/mine_normal.png",
+        "pagePath": "pages/user/user",
+        "text": "我的"
+      }]
+  }
+}

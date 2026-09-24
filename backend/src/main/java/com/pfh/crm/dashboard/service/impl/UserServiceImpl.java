@@ -175,18 +175,20 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             throw new BusinessException("用户不存在");
         }
 
-        user.setPhone(null);
-        user.setEmail(null);
-        user.setWechatId(null);
-        user.setDescription(null);
-        user.setGreeting(null);
-        user.setBizType(null);
-        user.setBizName(null);
-        user.setMsgLink(null);
-        user.setAddress(null);
-        user.setQr(null);
-        user.setPlatform(null);
-
-        updateById(user);
+        // MyBatis-Plus 的 updateById 默认忽略 null 字段，无法把列清成 NULL。
+        // 这里用 LambdaUpdateWrapper 显式 SET 各列为 NULL，才能真正做到"清空"。
+        update(Wrappers.<User>lambdaUpdate()
+                .eq(User::getId, userId)
+                .set(User::getPhone, null)
+                .set(User::getEmail, null)
+                .set(User::getWechatId, null)
+                .set(User::getDescription, null)
+                .set(User::getGreeting, null)
+                .set(User::getBizType, null)
+                .set(User::getBizName, null)
+                .set(User::getMsgLink, null)
+                .set(User::getAddress, null)
+                .set(User::getQr, null)
+                .set(User::getPlatform, null));
     }
 }

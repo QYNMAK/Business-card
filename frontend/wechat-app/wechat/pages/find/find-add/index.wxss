@@ -1,0 +1,143 @@
+.add-container{
+  background: #EFEFF4;
+}
+.form-item-input{
+  display: inline-block;
+  margin-top: 38rpx;
+}
+.form-item-lable{
+  margin-bottom: 10rpx;
+}
+.form-item{
+  display: flex;
+  border-top: solid 3rpx #EFEFF4;
+  line-height: 120rpx;
+  width: 100%;
+  background: #FFF;
+}
+.form-phone{
+  border-top: solid 3rpx #EFEFF4;
+  line-height: 120rpx;
+  width: 100%;
+  background: #FFF;
+}
+.form-phone-box{
+  padding-left: 150rpx;
+  width: 100% !important;
+  border-top: solid #EFEFF4 2rpx;
+}
+.form-item-lable{
+  margin-left: 30rpx;
+  margin-right: 40prpx;
+}
+.form-item-input-box{
+  margin-left: 30rpx;
+  width: 60%;
+}
+.radio{
+  margin-right: 20rpx;
+}
+.regionHint{
+  color:#999999;
+}
+.form-item-relation-customer{
+  margin-top: 10rpx;
+  position: relative;
+}
+.form-item-relation-customer-next-box{
+  color:#999999;
+}
+.form-item-relation-customer-next{
+  width: 60rpx;
+  height: 60rpx;
+  position: absolute;
+  top: 30rpx;
+  right: 20rpx;
+}
+.relation-customer-container{
+  display: flex;
+}
+.relation-customer-item-img{
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+}
+.relation-customer-item{
+  position: relative;
+  text-align: center;
+  line-height: 80rpx;
+  margin-right: 20rpx;
+}
+.relation-customer-item-name{
+  font-size: 25rpx;
+  line-height: 25rpx;
+  text-align: center;
+}
+.relation-customer-item-cancel{
+  position: absolute;
+  top: -8rpx;
+  right: 18rpx;
+  width: 10rpx;
+  height: 10rpx;
+}
+.img-upload-container{
+  padding-left: 10rpx;
+  padding-right: 10rpx;
+  display:flex;
+  justify-content:flex-start ;
+  flex-flow: wrap;
+  background: white;
+  margin-bottom: 400rpx;
+  height: 120rpx;
+}
+.img-upload-item{
+  width: 102rpx;
+  height: 102rpx;
+  position: relative;
+  margin-left: 17rpx;
+  margin-bottom: 17rpx;
+}
+
+.img-upload{
+  width: 102rpx;
+  height: 102rpx;
+  position: relative;
+}
+.img-upload-img{
+  width: 102rpx;
+  height: 102rpx;
+  margin-left: 10rpx;
+}
+.img-upload-item-img{
+    max-width: 100%;  
+    max-height: 100%;   
+}
+.img-upload-remove{
+  position: absolute;
+  top: -14rpx;
+right: -14rpx;
+  color: #999999;
+}
+.form-btn-box{
+  position: fixed;
+  left: 0;
+  right: 0;
+  text-align: center;
+  bottom: 80rpx;
+}
+.form-btn-sub{
+  width: 640rpx !important;
+  background: #3196ff !important;
+}
+.form-item-img{
+  margin-top: 10rpx;
+}
+.relation-customer-item-img-none{
+  color: white;
+  background: #3196ff;
+  margin-bottom: 14px;
+}
+.page-body{
+  background: white;
+  padding-bottom: 80rpx;
+}

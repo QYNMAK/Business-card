@@ -1,0 +1,9 @@
+.accredit{
+  margin-top: 40rpx;
+  color: white !important;
+  background: #3196ff !important;
+}
+.container{
+  margin-top: 50rpx;
+  padding: 300rpx 0;
+}
