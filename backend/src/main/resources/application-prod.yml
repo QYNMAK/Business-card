@@ -1,0 +1,36 @@
+# ============================================================
+# 生产环境 profile（腾讯云 TDSQL + 146.56.210.13）
+# 启动方式：mvn spring-boot:run -Dspring-boot.run.profiles=prod
+# 敏感项（数据库口令 / OSS 密钥 / 管理 key）用环境变量注入，
+# 见 deploy_prod.bat，不在代码里写死明文。
+# ============================================================
+server:
+  port: 8080
+  ssl:
+    enabled: false
+
+spring:
+  application:
+    name: crm
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    # 腾讯云 TDSQL（MySQL 协议），默认连 146.56.210.13:3306/crm
+    # 可用环境变量覆盖：DB_HOST / DB_PORT / DB_NAME / DB_USER / DB_PASS
+    url: jdbc:mysql://${DB_HOST:146.56.210.13}:${DB_PORT:3306}/${DB_NAME:crm}?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&useSSL=false
+    username: ${DB_USER:crm}
+    password: ${DB_PASS:crm}
+
+crm:
+  aliyun:
+    # 图片 / 二维码上传到阿里云 OSS，通过环境变量覆盖；不配置则图片功能不可用
+    access-key-id: ${OSS_AK:xx}
+    endpoint: ${OSS_ENDPOINT:xx}
+    access-key-secret: ${OSS_SK:xx}
+    img-preview: ${OSS_IMG_PREVIEW:xx}
+  internal:
+    # 管理员接口鉴权 key（调用 /admin/** 时请求头带 X-Admin-Key），生产务必用强随机值
+    admin-api-key: ${ADMIN_KEY:admin-secret-key}
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl

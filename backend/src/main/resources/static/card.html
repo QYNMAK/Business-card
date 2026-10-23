@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#2E7D32">
+  <title>商家名片</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background: #f5f6f8;
+      -webkit-user-select: none;
+      user-select: none;
+      touch-action: manipulation
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: stretch
+    }
+
+    .app {
+      position: relative;
+      width: 100%;
+      max-width: 480px;
+      height: 100dvh;
+      background: #f5f6f8;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column
+    }
+
+    .navbar {
+      height: 44px;
+      background: #fff;
+      color: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      font-size: 16px;
+      font-weight: 600;
+      flex-shrink: 0;
+      border-bottom: 1px solid #eee
+    }
+
+    .navbar .back {
+      position: absolute;
+      left: 12px;
+      top: 0;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      font-size: 22px;
+      padding: 0 8px;
+      cursor: pointer
+    }
+
+    .navbar .nav-right {
+      position: absolute;
+      right: 12px;
+      top: 0;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      font-size: 11px;
+      color: #2E7D32
+    }
+
+    /* 连接设置条 */
+    .conn-bar {
+      background: #1890ff;
+      color: #fff;
+      padding: 8px 12px;
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: wrap;
+      font-size: 12px;
+      flex-shrink: 0
+    }
+
+    .conn-bar input {
+      flex: 1;
+      min-width: 120px;
+      padding: 6px 8px;
+      border: none;
+      border-radius: 6px;
+      font-size: 12px;
+    }
+
+    .conn-bar .btn-mini {
+      background: #fff;
+      color: #1890ff;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      flex-shrink: 0
+    }
+
+    .conn-bar .conn-status {
+      font-size: 11px;
+      opacity: .9;
+      flex-shrink: 0
+    }
+
+    .conn-bar .conn-status.on {
+      color: #d9f7be
+    }
+
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 64px
+    }
+
+    .page {
+      display: none
+    }
+
+    .page.active {
+      display: block
+    }
+
+    .card-wrap {
+      padding: 16px
+    }
+
+    .top-green-card {
+      background: linear-gradient(135deg, #34b37a, #219667);
+      border-radius: 22px;
+      padding: 24px 20px;
+      color: #fff;
+      box-shadow: 0 10px 24px rgba(33, 150, 103, .25)
+    }
+
+    .card-header-row {
+      display: flex;
+      gap: 16px;
+      align-items: center
+    }
+
+    .card-avatar {
+      width: 86px;
+      height: 86px;
+      border-radius: 50%;
+      overflow: hidden;
+      flex-shrink: 0;
+      border: 3px solid rgba(255, 255, 255, .85);
+      background: rgba(255, 255, 255, .25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px
+    }
+
+    .card-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover
+    }
+
+    .card-info {
+      flex: 1;
+      min-width: 0
+    }
+
+    .card-name {
+      font-size: 22px;
+      font-weight: 800;
+      margin-bottom: 4px
+    }
+
+    .card-biz {
+      font-size: 14px;
+      opacity: .95;
+      margin-bottom: 10px
+    }
+
+    .card-desc-text {
+      font-size: 14px;
+      line-height: 1.7;
+      opacity: .92;
+      margin-bottom: 12px
+    }
+
+    .card-contact-line {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      margin: 6px 0
+    }
+
+    .white-action-card {
+      margin-top: 14px;
+      background: #fff;
+      border-radius: 22px;
+      padding: 22px 12px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, .06)
+    }
+
+    .action-row {
+      display: flex;
+      justify-content: space-around;
+      gap: 6px
+    }
+
+    .circle-action {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer
+    }
+
+    .circle-action:active {
+      transform: scale(.94)
+    }
+
+    .circle-icon {
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 24px;
+      box-shadow: 0 6px 14px rgba(0, 0, 0, .12)
+    }
+
+    .c-label {
+      font-size: 12px;
+      color: #333;
+      font-weight: 500
+    }
+
+    .icon-call {
+      background: #ff9800
+    }
+
+    .icon-wx {
+      background: #27b954
+    }
+
+    .icon-qr {
+      background: #27b954
+    }
+
+    .icon-mail {
+      background: #9c27b0
+    }
+
+    .icon-share {
+      background: #f44336
+    }
+
+    .footer-note {
+      text-align: center;
+      font-size: 12px;
+      color: #999;
+      padding: 22px 16px 10px;
+      line-height: 1.7
+    }
+
+    .my-wrap {
+      padding: 16px
+    }
+
+    .my-top-card {
+      background: #fff;
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, .06)
+    }
+
+    .my-green-head {
+      background: linear-gradient(135deg, #34b37a, #219667);
+      padding: 30px 20px;
+      text-align: center;
+      color: #fff
+    }
+
+    .my-avatar {
+      width: 78px;
+      height: 78px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .25);
+      border: 3px solid rgba(255, 255, 255, .8);
+      margin: 0 auto 12px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 34px
+    }
+
+    .my-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover
+    }
+
+    .my-green-head h2 {
+      font-size: 20px;
+      margin-bottom: 4px
+    }
+
+    .my-green-head p {
+      font-size: 12px;
+      opacity: .85
+    }
+
+    .my-menu {
+      padding: 8px
+    }
+
+    .my-item {
+      background: #fafbfc;
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      border: 1px solid #eef0f3
+    }
+
+    .my-item:active {
+      transform: scale(.98)
+    }
+
+    .my-item .mi-ic {
+      font-size: 22px
+    }
+
+    .my-item .mi-txt {
+      flex: 1
+    }
+
+    .my-item .mi-t {
+      font-size: 15px;
+      font-weight: 600;
+      color: #333
+    }
+
+    .my-item .mi-s {
+      font-size: 11px;
+      color: #aaa;
+      margin-top: 2px
+    }
+
+    .my-item .arrow {
+      color: #ccc;
+      font-size: 18px
+    }
+
+    .edit-page {
+      background: #f5f6f8;
+      min-height: 100dvh
+    }
+
+    .edit-header {
+      background: linear-gradient(135deg, #4CAF50, #2E7D32);
+      padding: 20px 16px;
+      color: #fff;
+      position: sticky;
+      top: 0;
+      z-index: 10
+    }
+
+    .edit-header .eh-row {
+      display: flex;
+      align-items: center;
+      gap: 10px
+    }
+
+    .edit-header .eh-back {
+      font-size: 24px;
+      cursor: pointer;
+      padding: 4px
+    }
+
+    .edit-header h2 {
+      font-size: 18px;
+      font-weight: 600;
+      flex: 1
+    }
+
+    .edit-header .eh-save {
+      font-size: 13px;
+      background: rgba(255, 255, 255, .2);
+      border-radius: 8px;
+      padding: 6px 14px;
+      cursor: pointer;
+      font-weight: 500
+    }
+
+    .edit-body {
+      padding: 16px
+    }
+
+    .edit-section {
+      background: #fff;
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, .04)
+    }
+
+    .edit-section h3 {
+      font-size: 13px;
+      color: #bbb;
+      margin-bottom: 12px;
+      letter-spacing: 1px
+    }
+
+    .edit-section h3.required::after {
+      content: " *";
+      color: #f44336;
+      font-weight: 700
+    }
+
+    .f-row {
+      margin-bottom: 14px
+    }
+
+    .f-row:last-child {
+      margin-bottom: 0
+    }
+
+    .f-label {
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 5px;
+      font-weight: 500
+    }
+
+    .f-input {
+      width: 100%;
+      border: 1px solid #e8e8e8;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 15px;
+      color: #333;
+      outline: none;
+      transition: border .2s;
+      background: #fafafa
+    }
+
+    .f-input:focus {
+      border-color: #4CAF50;
+      background: #fff
+    }
+
+    .f-input::placeholder {
+      color: #ccc
+    }
+
+    .f-textarea {
+      width: 100%;
+      border: 1px solid #e8e8e8;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 14px;
+      color: #333;
+      outline: none;
+      min-height: 70px;
+      resize: vertical;
+      background: #fafafa;
+      line-height: 1.6
+    }
+
+    .f-textarea:focus {
+      border-color: #4CAF50;
+      background: #fff
+    }
+
+    .avatar-upload {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 14px
+    }
+
+    .avatar-preview {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      overflow: hidden;
+      flex-shrink: 0;
+      border: 2px solid #e0e0e0
+    }
+
+    .avatar-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover
+    }
+
+    .avatar-actions {
+      flex: 1
+    }
+
+    .avatar-btn {
+      font-size: 13px;
+      color: #4CAF50;
+      cursor: pointer;
+      font-weight: 500
+    }
+
+    .avatar-hint {
+      font-size: 11px;
+      color: #bbb;
+      margin-top: 4px
+    }
+
+    .qr-section {
+      margin-bottom: 14px
+    }
+
+    .qr-preview {
+      width: 100%;
+      height: 160px;
+      background: #f9f9f9;
+      border: 2px dashed #ddd;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 8px;
+      overflow: hidden;
+      cursor: pointer
+    }
+
+    .qr-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain
+    }
+
+    .qr-preview .qr-placeholder {
+      font-size: 12px;
+      color: #ccc;
+      text-align: center;
+      line-height: 1.8
+    }
+
+    .save-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #4CAF50, #2E7D32);
+      color: #fff;
+      border: none;
+      border-radius: 14px;
+      padding: 16px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 8px;
+      letter-spacing: 1px
+    }
+
+    .save-btn:active {
+      opacity: .9;
+      transform: scale(.98)
+    }
+
+    .save-btn:disabled {
+      opacity: .5;
+      cursor: not-allowed
+    }
+
+    .tabbar {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 64px;
+      background: rgba(255, 255, 255, .96);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid #eee;
+      display: flex;
+      padding-bottom: 8px;
+      z-index: 5
+    }
+
+    .tab {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      color: #999;
+      font-size: 11px;
+      cursor: pointer
+    }
+
+    .tab .t-icon {
+      font-size: 20px
+    }
+
+    .tab.active {
+      color: #2E7D32
+    }
+
+    .tab.active .t-icon {
+      transform: scale(1.1)
+    }
+
+    .toast {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(.9);
+      background: rgba(0, 0, 0, .78);
+      color: #fff;
+      padding: 14px 26px;
+      border-radius: 12px;
+      font-size: 14px;
+      z-index: 9999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .25s, transform .25s;
+      max-width: 80%;
+      text-align: center;
+      line-height: 1.6;
+      white-space: pre-line
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1)
+    }
+
+    .qr-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .55);
+      z-index: 9000;
+      display: none;
+      align-items: center;
+      justify-content: center
+    }
+
+    .qr-modal-overlay.show {
+      display: flex
+    }
+
+    .qr-modal {
+      background: #fff;
+      border-radius: 20px;
+      padding: 24px 20px;
+      width: 280px;
+      text-align: center;
+      box-shadow: 0 16px 48px rgba(0, 0, 0, .3)
+    }
+
+    .qr-modal h3 {
+      font-size: 15px;
+      color: #333;
+      margin-bottom: 14px;
+      font-weight: 600
+    }
+
+    .qr-modal img {
+      width: 200px;
+      height: 200px;
+      object-fit: contain;
+      border: 1px solid #eee;
+      border-radius: 12px
+    }
+
+    .qr-modal .qr-tip {
+      font-size: 12px;
+      color: #999;
+      margin-top: 14px;
+      line-height: 1.6
+    }
+
+    .qr-modal .qr-close {
+      margin-top: 14px;
+      font-size: 13px;
+      color: #4CAF50;
+      cursor: pointer;
+      font-weight: 600
+    }
+
+    .qr-modal .qr-empty {
+      font-size: 13px;
+      color: #bbb;
+      padding: 40px 0;
+      line-height: 1.8
+    }
+
+    .hidden-input {
+      display: none
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app" id="mainApp">
+    <div class="navbar">
+      <span class="back" id="navBack" style="display:none" onclick="goBack()">‹</span>
+      <span id="navTitle">名片</span>
+      <span class="nav-right" id="navSaved">未连接</span>
+    </div>
+
+    <!-- 连接设置条（走后端） -->
+    <div class="conn-bar">
+      <input id="connBase" placeholder="接口地址" value="http://146.56.210.13:8080">
+      <input id="connUnion" placeholder="用户标识" value="">
+      <button class="btn-mini" onclick="doLogin()">连接</button>
+      <span class="conn-status" id="connStatus">未连接</span>
+    </div>
+
+    <div class="content">
+      <!-- ===== 名片页 ===== -->
+      <div class="page active" id="page-card">
+        <div class="card-wrap">
+          <div class="top-green-card">
+            <div class="card-header-row">
+              <div class="card-avatar" id="cardAvatar"><span>📷</span></div>
+              <div class="card-info">
+                <div class="card-name" id="cardName">我的名片</div>
+                <div class="card-biz" id="cardBadge"></div>
+                <div class="card-desc-text" id="cardDesc">完善资料，展示专业形象</div>
+                <div class="card-contact-line">📞 <span id="showPhone">未填写</span></div>
+                <div class="card-contact-line">💬 <span id="showWechat">未填写</span></div>
+                <div class="card-contact-line">📝 <span id="showGreeting">平台规则 不便回复 感谢理解❤️</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="white-action-card">
+            <div class="action-row">
+              <div class="circle-action" onclick="doCall()">
+                <div class="circle-icon icon-call">📞</div>
+                <div class="c-label">打电话</div>
+              </div>
+              <div class="circle-action" onclick="copyField('wechat','微信号')">
+                <div class="circle-icon icon-wx">💬</div>
+                <div class="c-label">微信号</div>
+              </div>
+              <div class="circle-action" onclick="showQrModal()">
+                <div class="circle-icon icon-qr">🔲</div>
+                <div class="c-label">微信二维码</div>
+              </div>
+              <div class="circle-action" onclick="doEmail()">
+                <div class="circle-icon icon-mail">📧</div>
+                <div class="c-label">发邮件</div>
+              </div>
+              <div class="circle-action" onclick="shareCard()">
+                <div class="circle-icon icon-share">↗</div>
+                <div class="c-label">分享名片</div>
+              </div>
+            </div>
+          </div>
+          <div class="footer-note" id="footerNote">感谢信任 · 期待合作</div>
+        </div>
+      </div>
+
+      <!-- ===== 我的页 ===== -->
+      <div class="page" id="page-my">
+        <div class="my-wrap">
+          <div class="my-top-card">
+            <div class="my-green-head">
+              <div class="my-avatar" id="myAvatar"><span>📷</span></div>
+              <h2 id="myName">我的名片</h2>
+              <p>商家名片 · 可编辑</p>
+            </div>
+            <div class="my-menu">
+              <div class="my-item" onclick="openEditor()">
+                <div class="mi-ic">✏️</div>
+                <div class="mi-txt">
+                  <div class="mi-t">编辑名片信息</div>
+                  <div class="mi-s">完善资料，展示专业形象</div>
+                </div>
+                <div class="arrow">›</div>
+              </div>
+              <div class="my-item" onclick="shareCard()">
+                <div class="mi-ic">📤</div>
+                <div class="mi-txt">
+                  <div class="mi-t">分享我的名片</div>
+                  <div class="mi-s">生成链接 / 复制</div>
+                </div>
+                <div class="arrow">›</div>
+              </div>
+              <div class="my-item" onclick="resetAll()">
+                <div class="mi-ic">🗑️</div>
+                <div class="mi-txt">
+                  <div class="mi-t">清空所有信息</div>
+                  <div class="mi-s">恢复默认状态</div>
+                </div>
+                <div class="arrow">›</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== 编辑页 ===== -->
+      <div class="page" id="page-edit">
+        <div class="edit-page">
+          <div class="edit-header">
+            <div class="eh-row">
+              <span class="eh-back" onclick="closeEditor()">‹</span>
+              <h2>编辑名片信息</h2>
+            </div>
+          </div>
+          <div class="edit-body">
+            <div class="edit-section">
+              <h3>头像</h3>
+              <div class="avatar-upload">
+                <div class="avatar-preview" id="editAvatarPrev"><span>📷</span></div>
+                <div class="avatar-actions">
+                  <div class="avatar-btn" onclick="document.getElementById('avatarInput').click()">上传头像</div>
+                  <div class="avatar-hint">建议 400×400 以上，职业形象照</div>
+                </div>
+              </div>
+              <input type="file" class="hidden-input" id="avatarInput" accept="image/*" onchange="handleAvatar(this)">
+            </div>
+
+            <div class="edit-section">
+              <h3>基本信息</h3>
+              <div class="f-row">
+                <div class="f-label">姓名 / 昵称</div><input class="f-input" id="editName" placeholder="如：阿美摄影">
+              </div>
+              <div class="f-row">
+                <div class="f-label">业务类型</div><input class="f-input" id="editBizType" placeholder="如：摄影师 / 化妆师 / 设计师">
+              </div>
+              <div class="f-row">
+                <div class="f-label">业务名称</div><input class="f-input" id="editBizName" placeholder="如：商业人像 / 婚礼跟妆">
+              </div>
+              <div class="f-row">
+                <div class="f-label">一句话介绍</div><textarea class="f-textarea" id="editDesc"
+                  placeholder="如：8年行业经验，服务过200+品牌&#10;日常/领证/婚礼跟妆"></textarea>
+              </div>
+            </div>
+
+            <div class="edit-section">
+              <h3>联系方式</h3>
+              <div class="f-row">
+                <div class="f-label">电话</div><input class="f-input" id="editPhone" type="tel" placeholder="请输入电话号码">
+              </div>
+              <div class="f-row">
+                <div class="f-label">微信号</div><input class="f-input" id="editWechat" placeholder="请输入微信号">
+              </div>
+              <div class="f-row">
+                <div class="f-label">邮箱</div><input class="f-input" id="editEmail" type="email" placeholder="请输入邮箱地址">
+              </div>
+              <div class="f-row">
+                <div class="f-label">消息链接（平台私信 URL）</div><input class="f-input" id="editMsgLink"
+                  placeholder="如：https://www.douyin.com/user/xxx">
+              </div>
+              <div class="f-row">
+                <div class="f-label">所在平台</div><input class="f-input" id="editPlatform" placeholder="如：小红书 / 微信 / 抖音">
+              </div>
+              <div class="f-row">
+                <div class="f-label">地址 / 坐标</div><input class="f-input" id="editAddress" placeholder="如：上海 · 静安区">
+              </div>
+            </div>
+
+            <div class="edit-section">
+              <h3 class="required">微信二维码（必填）</h3>
+              <div class="qr-section">
+                <div class="qr-preview" id="editQrPrev" onclick="document.getElementById('qrInput').click()">
+                  <div class="qr-placeholder" id="qrPlaceholder">点击上传个人微信 / 企微二维码</div>
+                  <img id="qrImg" style="display:none" alt="二维码">
+                </div>
+                <input type="file" class="hidden-input" id="qrInput" accept="image/*" onchange="handleQr(this)">
+              </div>
+            </div>
+
+            <div style="text-align:center;padding:10px 0 24px">
+              <div style="font-size:11px;color:#ccc;margin-bottom:12px">信息保存到后端服务器数据库，管理员端可统计查看</div>
+              <button class="save-btn" onclick="saveData()">保存并更新名片</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tabbar" id="tabbar">
+      <div class="tab active" id="tabCard" onclick="switchTab('card')">
+        <div class="t-icon">🏷️</div>
+        <div>名片</div>
+      </div>
+      <div class="tab" id="tabMy" onclick="switchTab('my')">
+        <div class="t-icon">👤</div>
+        <div>我的</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 二维码弹窗 -->
+  <div class="qr-modal-overlay" id="qrModalOverlay" onclick="closeQrModal(event)">
+    <div class="qr-modal" onclick="event.stopPropagation()">
+      <h3>微信二维码</h3>
+      <div id="qrModalContent">
+        <div class="qr-empty">暂无二维码<br>请先到「编辑名片信息」上传</div>
+      </div>
+      <div class="qr-tip">长按识别二维码或保存图片到相册</div>
+      <div class="qr-close" onclick="closeQrModal()">关闭</div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    function el(id) {return document.getElementById(id);}
+
+    /* ===== 连接 & 鉴权 ===== */
+    const LS = {base: 'cardBase', union: 'cardUnion', jwt: 'cardJwt'};
+    window._avatarData = null; window._qrData = null;   // 会话内预览（dataURL 或后端 URL）
+    window._avatarOss = null; window._qrOss = null;   // 上传到 OSS 的相对路径
+
+    function connBase() {return el('connBase').value.replace(/\/+$/, '');}
+    function token() {return localStorage.getItem(LS.jwt) || '';}
+
+    function initConn() {
+      const b = localStorage.getItem(LS.base); if (b) el('connBase').value = b;
+      const u = localStorage.getItem(LS.union);
+      el('connUnion').value = u || ('web-' + Math.random().toString(36).slice(2, 10));
+      if (localStorage.getItem(LS.union) == null)
+        localStorage.setItem(LS.union, el('connUnion').value);
+      if (token()) {setStatus(true); loadCard();}
+      else setStatus(false);
+    }
+
+    async function doLogin() {
+      const base = connBase(), union = el('connUnion').value.trim();
+      if (!union) {toast('请填写用户标识'); return;}
+      localStorage.setItem(LS.base, base);
+      localStorage.setItem(LS.union, union);
+      el('connStatus').textContent = '连接中…';
+      try {
+        const r = await fetch(base + '/user/dev-login?unionId=' + encodeURIComponent(union));
+        const d = await r.json();
+        if (!d.data || !d.data.jwt) throw new Error(d.message || '登录失败');
+        localStorage.setItem(LS.jwt, d.data.jwt);
+        setStatus(true);
+        toast('已连接 ✓ ' + (d.data.register ? '新用户' : '老用户'));
+        loadCard();
+      } catch (e) {
+        setStatus(false);
+        el('connStatus').textContent = '失败';
+        toast('连接失败：' + e.message + '\n请确认后端已启动且允许跨域');
+      }
+    }
+
+    function setStatus(on) {
+      const s = el('connStatus');
+      s.textContent = on ? '已连接' : '未连接';
+      s.classList.toggle('on', on);
+      el('navSaved').textContent = on ? '✓ 已保存' : '未连接';
+    }
+
+    /* ===== API ===== */
+    async function api(path, opt) {
+      opt = opt || {};
+      opt.headers = opt.headers || {};
+      if (token()) opt.headers['Authorization'] = token();
+      const r = await fetch(connBase() + path, opt);
+      let d = null; try {d = await r.json();} catch (e) { }
+      if (!r.ok) throw new Error((d && d.message) || ('HTTP ' + r.status));
+      if (d && d.success === false) throw new Error(d.message || '请求失败');
+      return d;
+    }
+
+    /* ===== 数据加载 ===== */
+    async function loadCard() {
+      if (!token()) return;
+      try {
+        const d = await api('/card');
+        const c = d.data || {};
+        window._qrData = c.qr || null;
+        window._avatarData = c.headPic || null;
+        window._qrOss = null;
+        window._avatarOss = null;
+        refreshCard(c);
+      } catch (e) {
+        toast('加载名片失败：' + e.message);
+      }
+    }
+
+    /* ===== 名片页刷新（c 可选，为 CardVO） ===== */
+    function refreshCard(c) {
+      c = c || {};
+      setAvatar(el('cardAvatar'), window._avatarData);
+      setAvatar(el('myAvatar'), window._avatarData);
+      setAvatar(el('editAvatarPrev'), window._avatarData);
+
+      el('cardName').textContent = c.username || '我的名片';
+      el('myName').textContent = c.username || '我的名片';
+      const badge = [c.bizType, c.bizName].filter(Boolean).join('｜');
+      el('cardBadge').textContent = badge || '完善资料，展示专业形象';
+      el('cardDesc').textContent = c.description || '完善资料，展示专业形象';
+
+      el('showPhone').textContent = c.phone || '未填写';
+      el('showWechat').textContent = c.wechatId || '未填写';
+      el('showGreeting').textContent = c.greeting || '平台规则 不便回复 感谢理解❤️';
+
+      // 同步编辑表单
+      el('editName').value = c.username || '';
+      el('editBizType').value = c.bizType || '';
+      el('editBizName').value = c.bizName || '';
+      el('editDesc').value = c.description || '';
+      el('editPhone').value = c.phone || '';
+      el('editWechat').value = c.wechatId || '';
+      el('editEmail').value = c.email || '';
+      el('editMsgLink').value = c.msgLink || '';
+      el('editAddress').value = c.address || '';
+      el('editPlatform').value = c.platform || '';
+
+      // 二维码预览
+      const qrImg = el('qrImg'), qrPh = el('qrPlaceholder');
+      if (window._qrData) {qrImg.src = window._qrData; qrImg.style.display = 'block'; qrPh.style.display = 'none';}
+      else {qrImg.style.display = 'none'; qrPh.style.display = 'block';}
+    }
+
+    function setAvatar(container, src) {
+      container.innerHTML = '';
+      if (src) {
+        const img = document.createElement('img');
+        img.src = src; img.alt = 'avatar';
+        img.onerror = function () {container.innerHTML = '<span>📷</span>';};
+        container.appendChild(img);
+      } else {
+        container.innerHTML = '<span>📷</span>';
+        container.style.fontSize = '30px';
+      }
+    }
+
+    /* ===== 图片上传（头像 / 二维码 → OSS） ===== */
+    async function uploadImage(file) {
+      const fd = new FormData();
+      fd.append('file', file);
+      const d = await api('/file/img/upload', {method: 'POST', body: fd});
+      return d.data; // OSS 相对路径
+    }
+
+    function handleAvatar(input) {
+      const file = input.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = async e => {
+        window._avatarData = e.target.result;          // 本地预览
+        window._avatarOss = null;
+        setAvatar(el('cardAvatar'), window._avatarData);
+        setAvatar(el('myAvatar'), window._avatarData);
+        setAvatar(el('editAvatarPrev'), window._avatarData);
+        if (token()) {
+          try {window._avatarOss = await uploadImage(file); toast('头像已上传服务器 ✓');}
+          catch (err) {window._avatarOss = null; toast('头像仅本地预览（' + err.message + '）');}
+        } else {toast('头像已选择，连接后可上传');}
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function handleQr(input) {
+      const file = input.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = async e => {
+        window._qrData = e.target.result;
+        window._qrOss = null;
+        const qrImg = el('qrImg'), qrPh = el('qrPlaceholder');
+        qrImg.src = window._qrData; qrImg.style.display = 'block'; qrPh.style.display = 'none';
+        if (token()) {
+          try {window._qrOss = await uploadImage(file); toast('二维码已上传服务器 ✓');}
+          catch (err) {window._qrOss = null; toast('二维码仅本地预览（' + err.message + '）');}
+        } else {toast('二维码已选择，连接后可上传');}
+      };
+      reader.readAsDataURL(file);
+    }
+
+    /* ===== 保存（走后端 /card/update） ===== */
+    function saveData() {
+      if (!token()) {toast('请先在顶部「连接」登录，再保存'); doLogin(); return;}
+      // 必填：必须已选二维码图
+      if (!window._qrData) {toast('⚠ 微信二维码为必填项，请上传'); return;}
+      const body = {
+        username: el('editName').value.trim(),
+        bizType: el('editBizType').value.trim(),
+        bizName: el('editBizName').value.trim(),
+        description: el('editDesc').value.trim(),
+        greeting: el('editDesc').value.trim(),
+        phone: el('editPhone').value.trim(),
+        wechatId: el('editWechat').value.trim(),
+        email: el('editEmail').value.trim(),
+        msgLink: el('editMsgLink').value.trim(),
+        address: el('editAddress').value.trim(),
+        platform: el('editPlatform').value.trim(),
+        headPic: window._avatarOss || null,
+        qr: window._qrOss || null
+      };
+      const btn = document.querySelector('.save-btn');
+      btn.disabled = true; btn.textContent = '保存中…';
+      api('/card/update', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body)})
+        .then(d => {
+          el('navSaved').textContent = '✓ 已保存';
+          // 二维码是否真正持久化到服务器（需要 OSS）
+          if (body.qr) toast('已保存 ✓ 名片已更新到服务器');
+          else toast('文本已保存 ✓ 但二维码未持久化（OSS 未配置，需配 crm.aliyun 后才能存图）');
+          refreshCard(d.data);
+        })
+        .catch(e => toast('保存失败：' + e.message))
+        .finally(() => {btn.disabled = false; btn.textContent = '保存并更新名片';});
+    }
+
+    /* ===== 功能按钮 ===== */
+    function curData() {
+      // 从编辑表单读取当前数据（未保存时也能用）
+      return {
+        phone: el('editPhone').value.trim(),
+        wechat: el('editWechat').value.trim(),
+        email: el('editEmail').value.trim()
+      };
+    }
+    function doCall() {
+      const d = curData();
+      if (!d.phone) {toast('请先填写电话号码'); openEditor(); return;}
+      copyToClipboard(d.phone, '电话号');
+    }
+    function doEmail() {
+      const d = curData();
+      if (!d.email) {toast('请先填写邮箱'); openEditor(); return;}
+      copyToClipboard(d.email, '邮箱');
+    }
+    function showQrModal() {
+      const content = el('qrModalContent');
+      if (window._qrData) content.innerHTML = '<img src="' + window._qrData + '" alt="微信二维码">';
+      else content.innerHTML = '<div class="qr-empty">暂无二维码<br>请先到「编辑名片信息」上传</div>';
+      el('qrModalOverlay').classList.add('show');
+    }
+    function closeQrModal() {el('qrModalOverlay').classList.remove('show');}
+    function copyField(key, label) {
+      const val = curData()['wechat'];
+      if (!val) {toast('请先填写' + label); openEditor(); return;}
+      copyToClipboard(val, label);
+    }
+    function copyToClipboard(text, label) {
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(text)
+          .then(() => toast(label + ' 已复制 ✓'))
+          .catch(() => legacyCopy(text, label));
+      } else legacyCopy(text, label);
+    }
+    function legacyCopy(text, label) {
+      const ta = document.createElement('textarea'); ta.value = text;
+      ta.style.cssText = 'position:fixed;opacity:0';
+      document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+      document.body.removeChild(ta); toast(label + ' 已复制 ✓');
+    }
+    function shareCard() {
+      const url = location.href;
+      if (navigator.share) {navigator.share({title: '我的商家名片', text: '点击名片，一键联系', url: url}).catch(() => { });}
+      else {copyToClipboard(url, '名片链接'); toast('链接已复制，粘贴到微信分享 ✓');}
+    }
+
+    /* ===== 导航 ===== */
+    function switchTab(name) {
+      el('tabbar').style.display = 'flex';
+      el('page-card').classList.toggle('active', name === 'card');
+      el('page-my').classList.toggle('active', name === 'my');
+      el('page-edit').classList.remove('active');
+      el('tabCard').classList.toggle('active', name === 'card');
+      el('tabMy').classList.toggle('active', name === 'my');
+      el('navTitle').textContent = name === 'card' ? '名片' : '我的';
+      el('navBack').style.display = 'none';
+      if (name === 'card' && token()) loadCard();
+    }
+    function openEditor() {
+      el('page-card').classList.remove('active');
+      el('page-my').classList.remove('active');
+      el('page-edit').classList.add('active');
+      el('navTitle').textContent = '编辑名片信息';
+      el('navBack').style.display = 'flex';
+      el('tabbar').style.display = 'none';
+      el('mainApp').querySelector('.content').scrollTop = 0;
+    }
+    function closeEditor() {refreshCard(); switchTab('my');}
+    function goBack() {
+      const active = document.querySelector('.page.active');
+      if (active && active.id === 'page-edit') closeEditor();
+    }
+    async function resetAll() {
+      if (!token()) {toast('请先连接'); return;}
+      if (!confirm('确定清空所有名片信息？')) return;//（调用后端 / card / clear）
+      try {
+        await api('/card/clear', {method: 'POST'});
+        window._avatarData = null; window._qrData = null; window._avatarOss = null; window._qrOss = null;
+        refreshCard({});
+        el('navSaved').textContent = '已清空';
+        switchTab('card');
+        toast('已清空，请重新填写');
+      } catch (e) {toast('清空失败：' + e.message);}
+    }
+
+    /* ===== Toast ===== */
+    let toastTimer;
+    function toast(msg) {
+      const t = el('toast'); t.textContent = msg; t.classList.add('show');
+      clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 2600);
+    }
+
+    /* ===== 阻止双击缩放 ===== */
+    let lastT = 0;
+    document.addEventListener('touchend', e => {const n = Date.now(); if (n - lastT < 300) e.preventDefault(); lastT = n;}, {passive: false});
+
+    /* ===== 初始化 ===== */
+    initConn();
+    refreshCard({});
+  </script>
+</body>
+
+</html>

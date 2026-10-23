@@ -14,8 +14,8 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     # 默认连接本机 MySQL，可用环境变量 DB_HOST / DB_NAME / DB_USER / DB_PASS 覆盖
     url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:crm}?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
-    username: ${DB_USER:root}
-    password: ${DB_PASS:root}
+    username: ${DB_USER:crm}
+    password: ${DB_PASS:}
   servlet:
     multipart:
       max-file-size: 1MB

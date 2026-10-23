@@ -26,7 +26,9 @@ public class WebConfig implements WebMvcConfigurer {
                         "/user/login/out",
                         "/user/register",
                         "/user/dev-login",
-                        "/admin/**"
+                        "/admin/**",
+                        "/*.html",
+                        "/favicon.ico"
                 );
 
         // 允许跨域（管理端 HTML 静态页面从浏览器直接调用 API）

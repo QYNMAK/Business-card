@@ -1,6 +1,0 @@
-{
-  "navigationBarTitleText": "详情",
-  "usingComponents": {
-    "mp-actionSheet": "../../components/actionsheet/actionsheet"
-  }
-}

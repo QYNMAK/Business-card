@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>名片管理后台</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: #f0f2f5;
+      color: #333;
+    }
+
+    .layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 220px;
+      background: #001529;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .sidebar .logo {
+      padding: 20px;
+      font-size: 18px;
+      font-weight: 700;
+      border-bottom: 1px solid rgba(255, 255, 255, .1);
+    }
+
+    .sidebar .menu-item {
+      padding: 16px 20px;
+      cursor: pointer;
+      font-size: 15px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .sidebar .menu-item:hover {
+      background: rgba(255, 255, 255, .08);
+    }
+
+    .sidebar .menu-item.active {
+      background: #1890ff;
+    }
+
+    .main {
+      flex: 1;
+      padding: 24px;
+      overflow-x: auto;
+    }
+
+    .page {
+      display: none;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    h1 {
+      font-size: 20px;
+      margin-bottom: 16px;
+    }
+
+    .config-bar {
+      background: #fff;
+      border-radius: 8px;
+      padding: 14px;
+      margin-bottom: 16px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .config-bar label {
+      font-size: 13px;
+      color: #666;
+    }
+
+    .config-bar input {
+      padding: 8px 12px;
+      border: 1px solid #d9d9d9;
+      border-radius: 6px;
+      font-size: 13px;
+      width: 260px;
+    }
+
+    .config-bar input.key {
+      width: 200px;
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      background: #1890ff;
+      color: #fff;
+    }
+
+    .btn:hover {
+      opacity: .9;
+    }
+
+    .btn.green {
+      background: #52c41a;
+    }
+
+    .btn.red {
+      background: #ff4d4f;
+    }
+
+    .btn.gray {
+      background: #8c8c8c;
+    }
+
+    .btn:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .stat-card {
+      background: #fff;
+      border-radius: 8px;
+      padding: 18px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, .06);
+    }
+
+    .stat-card .num {
+      font-size: 30px;
+      font-weight: 700;
+      color: #1890ff;
+    }
+
+    .stat-card .lbl {
+      font-size: 13px;
+      color: #888;
+      margin-top: 6px;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .toolbar input {
+      padding: 9px 12px;
+      border: 1px solid #d9d9d9;
+      border-radius: 6px;
+      font-size: 13px;
+      width: 220px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, .06);
+    }
+
+    th,
+    td {
+      padding: 12px 14px;
+      text-align: left;
+      font-size: 13px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    th {
+      background: #fafafa;
+      font-weight: 600;
+      color: #555;
+    }
+
+    tr:hover td {
+      background: #fafafa;
+    }
+
+    .avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #eee;
+      vertical-align: middle;
+    }
+
+    .avatar-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      background: #e6f4ff;
+      color: #1890ff;
+    }
+
+    .tag.del {
+      background: #fff1f0;
+      color: #ff4d4f;
+    }
+
+    .tag.ok {
+      background: #f6ffed;
+      color: #52c41a;
+    }
+
+    .pager {
+      margin-top: 14px;
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      align-items: center;
+      font-size: 13px;
+    }
+
+    .pager button {
+      padding: 6px 12px;
+    }
+
+    .drawer-mask {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .45);
+      z-index: 90;
+      display: none;
+    }
+
+    .drawer-mask.show {
+      display: block;
+    }
+
+    .drawer {
+      position: fixed;
+      top: 0;
+      right: -520px;
+      width: 500px;
+      max-width: 92vw;
+      height: 100vh;
+      background: #fff;
+      z-index: 100;
+      transition: right .25s;
+      overflow-y: auto;
+      box-shadow: -4px 0 20px rgba(0, 0, 0, .15);
+    }
+
+    .drawer.show {
+      right: 0;
+    }
+
+    .drawer .d-head {
+      padding: 18px 20px;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 16px;
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+      background: #fff;
+      z-index: 2;
+    }
+
+    .drawer .d-body {
+      padding: 20px;
+    }
+
+    .field {
+      margin-bottom: 14px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 5px;
+    }
+
+    .field input,
+    .field textarea,
+    .field select {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid #d9d9d9;
+      border-radius: 6px;
+      font-size: 13px;
+    }
+
+    .field textarea {
+      min-height: 60px;
+      resize: vertical;
+    }
+
+    .preview-img {
+      width: 100%;
+      height: 120px;
+      object-fit: contain;
+      background: #f5f5f5;
+      border: 1px dashed #ddd;
+      border-radius: 8px;
+      margin-top: 6px;
+    }
+
+    .muted {
+      color: #bbb;
+      font-size: 12px;
+    }
+
+    .json-box {
+      background: #f7f8fa;
+      border-radius: 6px;
+      padding: 12px;
+      font-size: 12px;
+      white-space: pre-wrap;
+      word-break: break-all;
+      max-height: 200px;
+      overflow: auto;
+    }
+
+    .diff-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .diff-table thead th {
+      background: #f5f5f5;
+      border: 1px solid #eee;
+      padding: 8px 10px;
+      font-size: 12px;
+      color: #555;
+      text-align: left;
+    }
+
+    .diff-table td {
+      border: 1px solid #f0f0f0;
+      padding: 9px 10px;
+      vertical-align: top;
+    }
+
+    .diff-table tr.changed td {
+      background: #fffbe6;
+    }
+
+    .diff-old {
+      color: #999;
+      text-decoration: line-through;
+      word-break: break-all;
+    }
+
+    .diff-new {
+      color: #fa8c16;
+      font-weight: 600;
+      word-break: break-all;
+    }
+
+    .diff-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .diff-badge.orange {
+      background: #fff7e6;
+      color: #fa8c16;
+    }
+
+    .diff-badge.red {
+      background: #fff1f0;
+      color: #ff4d4f;
+    }
+
+    .diff-note {
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 14px;
+    }
+
+    .toast {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, .8);
+      color: #fff;
+      padding: 12px 22px;
+      border-radius: 8px;
+      z-index: 999;
+      font-size: 14px;
+      opacity: 0;
+      transition: opacity .3s;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      opacity: 1;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 50px;
+      color: #bbb;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="layout">
+    <div class="sidebar">
+      <div class="logo">📇 名片管理后台</div>
+      <div class="menu-item active" data-page="users" onclick="switchPage('users')">👥 用户管理</div>
+      <div class="menu-item" data-page="stats" onclick="switchPage('stats')">📊 平台统计</div>
+      <div class="menu-item" data-page="audit" onclick="switchPage('audit')">📝 审计日志</div>
+    </div>
+
+    <div class="main">
+      <div class="config-bar">
+        <label>接口地址</label>
+        <input id="baseUrl" value="http://146.56.210.13:8080">
+        <label>管理员Key</label>
+        <input id="adminKey" class="key" value="xx">
+        <button class="btn gray" onclick="loadAll()">重新加载</button>
+        <span class="muted">Key 取自 backend/src/main/resources/application.yml 的 crm.internal.admin-api-key（local 模式为
+          local-admin-key，详见 docs/项目说明.md）</span>
+      </div>
+
+      <div class="page active" id="page-users">
+        <h1>用户管理</h1>
+        <div class="toolbar">
+          <input id="kw" placeholder="姓名/手机/微信/邮箱">
+          <input id="platformFilter" placeholder="平台（如 小红书）">
+          <button class="btn" onclick="loadUsers()">查询</button>
+          <button class="btn gray" onclick="resetSearch()">重置</button>
+        </div>
+        <div id="userTableWrap"></div>
+        <div class="pager" id="pager"></div>
+      </div>
+
+      <div class="page" id="page-stats">
+        <h1>平台使用统计</h1>
+        <div id="statWrap">
+          <div class="empty">加载中…</div>
+        </div>
+      </div>
+
+      <div class="page" id="page-audit">
+        <h1>审计日志</h1>
+        <div class="toolbar">
+          <input id="auditUserId" placeholder="按被操作用户ID过滤">
+          <button class="btn" onclick="loadAudit()">查询</button>
+        </div>
+        <div id="auditWrap">
+          <div class="empty">暂无日志</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="drawer-mask" id="drawerMask" onclick="closeDrawer()"></div>
+  <div class="drawer" id="drawer">
+    <div class="d-head">
+      <span id="drawerTitle">用户详情</span>
+      <span style="cursor:pointer;font-size:20px" onclick="closeDrawer()">×</span>
+    </div>
+    <div class="d-body" id="drawerBody"></div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    let state = {page: 1, size: 20, total: 0, currentUserId: null};
+    let toastTimer;
+
+    function cfg() {
+      return {
+        base: document.getElementById('baseUrl').value.replace(/\/+$/, ''),
+        key: document.getElementById('adminKey').value
+      };
+    }
+    async function api(path, opt) {
+      const c = cfg();
+      const headers = Object.assign({'X-Admin-Key': c.key}, (opt && opt.headers) || {});
+      if (opt && opt.body && !headers['Content-Type']) headers['Content-Type'] = 'application/json';
+      const resp = await fetch(c.base + path, Object.assign({}, opt, {headers}));
+      let data = null;
+      try {data = await resp.json();} catch (e) { }
+      if (!resp.ok) {
+        const msg = (data && data.message) || ('HTTP ' + resp.status);
+        throw new Error(msg);
+      }
+      return data;
+    }
+
+    function switchPage(name) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById('page-' + name).classList.add('active');
+      document.querySelectorAll('.menu-item').forEach(m => m.classList.toggle('active', m.dataset.page === name));
+      if (name === 'users') loadUsers();
+      if (name === 'stats') loadStats();
+      if (name === 'audit') loadAudit();
+    }
+    function loadAll() {loadUsers(); loadStats(); loadAudit();}
+
+    async function loadUsers() {
+      const kw = document.getElementById('kw').value.trim();
+      const platform = document.getElementById('platformFilter').value.trim();
+      let qs = '?page=' + state.page + '&size=' + state.size;
+      if (kw) qs += '&keyword=' + encodeURIComponent(kw);
+      if (platform) qs += '&platform=' + encodeURIComponent(platform);
+      try {
+        const res = await api('/admin/users' + qs);
+        renderUserTable(res.data);
+      } catch (e) {
+        document.getElementById('userTableWrap').innerHTML = '<div class="empty">加载失败：' + esc(e.message) + '<br><span class="muted">检查接口地址 / Key / 后端是否运行 / 是否允许跨域</span></div>';
+      }
+    }
+    function renderUserTable(pageData) {
+      state.total = pageData.total;
+      const records = pageData.records || [];
+      if (!records.length) {
+        document.getElementById('userTableWrap').innerHTML = '<div class="empty">没有用户数据</div>';
+      } else {
+        let html = '<table><thead><tr><th>用户</th><th>平台</th><th>业务</th><th>手机</th><th>微信</th><th>邮箱</th><th>状态</th><th>操作</th></tr></thead><tbody>';
+        records.forEach(u => {
+          const pic = u.headPic ? '<img class="avatar" src="' + u.headPic + '" onerror="this.style.display=\'none\'">' : '<div class="avatar"></div>';
+          const status = u.status === 0 ? '<span class="tag del">停用</span>' : '<span class="tag ok">正常</span>';
+          html += '<tr>' +
+            '<td><div class="avatar-box">' + pic + '<div><b>' + esc(u.username || '-') + '</b><div class="muted">' + esc(u.id) + '</div></div></div></td>' +
+            '<td>' + (u.platform ? '<span class="tag">' + esc(u.platform) + '</span>' : '<span class="muted">-</span>') + '</td>' +
+            '<td>' + esc([u.bizType, u.bizName].filter(Boolean).join('/') || '-') + '</td>' +
+            '<td>' + esc(u.phone || '-') + '</td>' +
+            '<td>' + esc(u.wechatId || '-') + '</td>' +
+            '<td>' + esc(u.email || '-') + '</td>' +
+            '<td>' + status + '</td>' +
+            '<td>' +
+            '<button class="btn" style="padding:5px 10px" onclick="openDrawer(\'' + u.id + '\')">编辑</button> ' +
+            '<button class="btn red" style="padding:5px 10px" onclick="delUser(\'' + u.id + '\',\'' + esc(u.username || '') + '\')">删除</button>' +
+            '</td>' +
+            '</tr>';
+        });
+        html += '</tbody></table>';
+        document.getElementById('userTableWrap').innerHTML = html;
+      }
+      renderPager();
+    }
+    function renderPager() {
+      const pages = Math.max(1, Math.ceil(state.total / state.size));
+      let html = '<span>共 ' + state.total + ' 条</span>';
+      html += '<button class="btn gray" ' + (state.page <= 1 ? 'disabled' : '') + ' onclick="goPage(' + (state.page - 1) + ')">上一页</button>';
+      html += '<span>' + state.page + ' / ' + pages + '</span>';
+      html += '<button class="btn gray" ' + (state.page >= pages ? 'disabled' : '') + ' onclick="goPage(' + (state.page + 1) + ')">下一页</button>';
+      document.getElementById('pager').innerHTML = html;
+    }
+    function goPage(p) {state.page = p; loadUsers();}
+    function resetSearch() {
+      document.getElementById('kw').value = '';
+      document.getElementById('platformFilter').value = '';
+      state.page = 1; loadUsers();
+    }
+
+    async function openDrawer(userId) {
+      state.currentUserId = userId;
+      document.getElementById('drawerTitle').textContent = '编辑用户资料';
+      document.getElementById('drawerBody').innerHTML = '<div class="empty">加载中…</div>';
+      showDrawer();
+      try {
+        const res = await api('/admin/users/' + userId);
+        const u = res.data;
+        const fields = [
+          ['username', '姓名/昵称'], ['bizType', '业务类型'], ['bizName', '业务名称'],
+          ['description', '一句话介绍'], ['phone', '电话'], ['wechatId', '微信号'],
+          ['email', '邮箱'], ['msgLink', '消息链接'], ['address', '地址'], ['platform', '所在平台'], ['greeting', '问候语/备注']
+        ];
+        let html = '';
+        html += '<div class="field"><label>头像 URL</label><input id="f-headPic" value="' + esc(u.headPic || '') + '">' +
+          (u.headPic ? '<img class="preview-img" id="headPicPrev" src="' + esc(u.headPic) + '" onerror="this.style.display=\'none\'">' : '') + '</div>';
+        fields.forEach(([k, lbl]) => {
+          html += '<div class="field"><label>' + lbl + '</label><input id="f-' + k + '" value="' + esc(u[k] || '') + '"></div>';
+        });
+        html += '<div class="field"><label>二维码图片 URL（微信二维码）</label><input id="f-qr" value="' + esc(u.qr || '') + '">' +
+          (u.qr ? '<img class="preview-img" id="qrPrev" src="' + esc(u.qr) + '" onerror="this.style.display=\'none\'">' : '') + '</div>';
+        html += '<div class="field"><label>状态</label><select id="f-status">' +
+          '<option value="1" ' + (u.status === 1 ? 'selected' : '') + '>正常</option>' +
+          '<option value="0" ' + (u.status === 0 ? 'selected' : '') + '>停用</option></select></div>';
+        html += '<div class="field"><label>用户ID（只读）</label><input value="' + esc(u.id) + '" disabled class="muted"></div>';
+        html += '<div style="display:flex;gap:10px;margin-top:16px">' +
+          '<button class="btn green" style="flex:1" onclick="saveUser()">保存修改</button>' +
+          '<button class="btn gray" onclick="closeDrawer()">取消</button></div>';
+        document.getElementById('drawerBody').innerHTML = html;
+      } catch (e) {
+        document.getElementById('drawerBody').innerHTML = '<div class="empty">加载失败：' + esc(e.message) + '</div>';
+      }
+    }
+    function val(id) {const el = document.getElementById(id); return el ? el.value.trim() : null;}
+    async function saveUser() {
+      const body = {
+        username: val('f-username'), bizType: val('f-bizType'), bizName: val('f-bizName'),
+        description: val('f-description'), phone: val('f-phone'), wechatId: val('f-wechatId'),
+        email: val('f-email'), msgLink: val('f-msgLink'), address: val('f-address'),
+        platform: val('f-platform'), greeting: val('f-greeting'), headPic: val('f-headPic'),
+        qr: val('f-qr'), status: parseInt(val('f-status'), 10)
+      };
+      try {
+        await api('/admin/users/' + state.currentUserId, {method: 'PUT', body: JSON.stringify(body)});
+        toast('已保存 ✓');
+        closeDrawer(); loadUsers();
+      } catch (e) {toast('保存失败：' + e.message);}
+    }
+    async function delUser(userId, name) {
+      if (!confirm('确定软删除用户 "' + (name || userId) + '" 吗？\n（写审计日志，可恢复）')) return;
+      try {
+        await api('/admin/users/' + userId, {method: 'DELETE'});
+        toast('已删除 ✓');
+        loadUsers();
+      } catch (e) {toast('删除失败：' + e.message);}
+    }
+    function showDrawer() {document.getElementById('drawerMask').classList.add('show'); document.getElementById('drawer').classList.add('show');}
+    function closeDrawer() {document.getElementById('drawerMask').classList.remove('show'); document.getElementById('drawer').classList.remove('show');}
+
+    async function loadStats() {
+      try {
+        const res = await api('/admin/stats/platform');
+        const stats = res.data || {};
+        const total = Object.values(stats).reduce((a, b) => a + b, 0);
+        const keys = Object.keys(stats);
+        let html = '<div class="stat-grid"><div class="stat-card"><div class="num">' + total + '</div><div class="lbl">填写名片总用户数</div></div>';
+        keys.forEach(k => {
+          html += '<div class="stat-card"><div class="num">' + stats[k] + '</div><div class="lbl">' + esc(k) + '</div></div>';
+        });
+        html += '</div>';
+        if (!keys.length) html += '<div class="empty">暂无平台统计（用户填写名片并选择平台后才有数据）</div>';
+        document.getElementById('statWrap').innerHTML = html;
+      } catch (e) {
+        document.getElementById('statWrap').innerHTML = '<div class="empty">加载失败：' + esc(e.message) + '</div>';
+      }
+    }
+
+    async function loadAudit() {
+      const targetUserId = document.getElementById('auditUserId').value.trim();
+      let qs = '?page=1&size=50';
+      if (targetUserId) qs += '&targetUserId=' + encodeURIComponent(targetUserId);
+      try {
+        const res = await api('/admin/audit-logs' + qs);
+        const records = (res.data && res.data.records) || [];
+        if (!records.length) {document.getElementById('auditWrap').innerHTML = '<div class="empty">暂无审计日志</div>'; return;}
+        let html = '<table><thead><tr><th>时间</th><th>操作</th><th>被操作用户</th><th>操作人</th><th>说明</th><th>详情</th></tr></thead><tbody>';
+        records.forEach(l => {
+          const when = l.createdAt ? new Date(l.createdAt).toLocaleString('zh-CN') : '-';
+          const action = l.action === 'USER_UPDATE' ? '<span class="tag">修改</span>' : (l.action === 'USER_DELETE' ? '<span class="tag del">删除</span>' : '<span class="tag ok">' + esc(l.action) + '</span>');
+          html += '<tr><td>' + when + '</td><td>' + action + '</td><td class="muted">' + esc(l.targetUserId || '-') + '</td>' +
+            '<td>' + esc(l.operator || '-') + '</td><td>' + esc(l.remark || '') + '</td>' +
+            '<td><button class="btn" style="padding:4px 10px" onclick="showDiff(\'' + l.id + '\')">查看</button></td></tr>';
+        });
+        html += '</tbody></table>';
+        document.getElementById('auditWrap').innerHTML = html;
+        window._auditRecords = records;
+      } catch (e) {
+        document.getElementById('auditWrap').innerHTML = '<div class="empty">加载失败：' + esc(e.message) + '</div>';
+      }
+    }
+    // 字段名 → 中文标签（审计详情人话展示用）
+    const FIELD_LABELS = {
+      id: '用户ID', username: '姓名/昵称', phone: '电话', wechatId: '微信号', email: '邮箱',
+      bizType: '业务类型', bizName: '业务名称', description: '一句话介绍', greeting: '问候语/备注',
+      msgLink: '消息链接', address: '地址', platform: '所在平台', headPic: '头像',
+      qr: '微信二维码', status: '状态', isDelete: '删除标记', unionId: '微信unionId',
+      sex: '性别', created: '创建时间', updated: '修改时间', password: '密码',
+      province: '省', city: '市', county: '区'
+    };
+    const FIELD_ORDER = ['username', 'platform', 'bizType', 'bizName', 'description', 'greeting', 'phone', 'wechatId', 'email', 'msgLink', 'address', 'headPic', 'qr', 'status', 'isDelete', 'unionId', 'sex', 'created', 'updated'];
+
+    function parseMaybeJson(v) {
+      if (v == null) return {};
+      if (typeof v === 'object') return v;
+      try {return JSON.parse(v);} catch (e) {return {};}
+    }
+    function fmtVal(v, key) {
+      if (v == null || v === '') return '—';
+      if (key === 'status') return v == 1 ? '正常' : (v == 0 ? '停用' : v);
+      if (key === 'isDelete') return v == 1 ? '已删除' : '未删除';
+      if (key === 'sex') return ({0: '未知', 1: '男', 2: '女'})[v] !== undefined ? ({0: '未知', 1: '男', 2: '女'})[v] : v;
+      if (key === 'created' || key === 'updated') return typeof v === 'number' ? new Date(v).toLocaleString('zh-CN') : String(v);
+      return String(v);
+    }
+    function orderedKeys(obj) {
+      const ks = Object.keys(obj || {});
+      const known = FIELD_ORDER.filter(k => ks.includes(k));
+      const rest = ks.filter(k => !FIELD_ORDER.includes(k));
+      return known.concat(rest);
+    }
+
+    function showDiff(logId) {
+      const l = (window._auditRecords || []).find(x => x.id === logId);
+      if (!l) return;
+      document.getElementById('drawerTitle').textContent = '审计详情';
+
+      const before = parseMaybeJson(l.beforeJson);
+      const after = parseMaybeJson(l.afterJson);
+      const isDelete = l.action === 'USER_DELETE';
+      const actionText = isDelete ? '删除' : '修改';
+
+      // 找出变更字段
+      const allKeys = Array.from(new Set([...Object.keys(before), ...Object.keys(after)]));
+      const changed = allKeys.filter(k => JSON.stringify(before[k]) !== JSON.stringify(after[k]));
+
+      let html = '';
+      html += '<div style="margin-bottom:14px">' +
+        '<span class="diff-badge ' + (isDelete ? 'red' : 'orange') + '">' + actionText + '</span> ' +
+        '<span class="muted">操作人：' + esc(l.operator || '-') + ' ｜ ' + (l.createdAt ? new Date(l.createdAt).toLocaleString('zh-CN') : '') + '</span>' +
+        '</div>';
+      if (l.remark) html += '<div class="diff-note">说明：' + esc(l.remark) + '</div>';
+
+      if (changed.length) {
+        html += '<div class="diff-note" style="font-weight:600;color:#555">本次变更（' + changed.length + ' 项）：</div>';
+        html += '<table class="diff-table"><thead><tr><th style="width:34%">字段</th><th>修改前</th><th>修改后</th></tr></thead><tbody>';
+        changed.forEach(k => {
+          html += '<tr class="changed">'
+            + '<td>' + (FIELD_LABELS[k] || k) + '<div class="muted" style="font-size:11px">' + esc(k) + '</div></td>'
+            + '<td class="diff-old">' + fmtVal(before[k], k) + '</td>'
+            + '<td class="diff-new">' + fmtVal(after[k], k) + '</td>'
+            + '</tr>';
+        });
+        html += '</tbody></table>';
+      } else {
+        html += '<div class="diff-note">本次操作未产生字段变更。</div>';
+      }
+
+      // 完整快照（折叠可看，仍是结构化字段而非原始 JSON）
+      html += '<div style="margin-top:18px;border-top:1px dashed #e0e0e0;padding-top:14px">'
+        + '<div class="diff-note">完整数据快照</div>'
+        + '<div class="muted" style="font-size:12px;margin-bottom:6px">修改前</div>'
+        + '<div class="json-box">' + esc(JSON.stringify(before, null, 2)) + '</div>'
+        + '<div class="muted" style="font-size:12px;margin:10px 0 6px">修改后</div>'
+        + '<div class="json-box">' + esc(JSON.stringify(after, null, 2)) + '</div>'
+        + '</div>';
+
+      html += '<div style="margin-top:12px"><button class="btn gray" onclick="closeDrawer()">关闭</button></div>';
+      document.getElementById('drawerBody').innerHTML = html;
+      showDrawer();
+    }
+
+    function esc(s) {if (s == null) return ''; return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');}
+    function toast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg; t.classList.add('show');
+      clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+    }
+
+    loadUsers(); loadStats();
+  </script>
+</body>
+
+</html>
